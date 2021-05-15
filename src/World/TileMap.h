@@ -7,16 +7,47 @@
 
 
 
+class TileLayer 
+{
+public:
+	TileLayer() {}
+	TileLayer(uint16_t width, uint16_t height);
+
+	std::vector<std::vector<CommonTile>> m_tiles;
+};
+
+
+
+
+
+class UniqueTileLayer
+{
+public:
+	UniqueTileLayer() {}
+
+	//Aggiungere tutte le liste di UniqueTile
+};
+
+
+
+
+
+//First TileLayer is with functionality
+//Second or more TileLayer is without functionality
 class TileMap
 {
 public:
 	TileMap() {}
-	TileMap(uint16_t width, uint16_t height);
 
-	CommonTile& getTile(int y, int x);
+	//Aggiungere getUniqueTile per ogni UniqueTile
+	void addTileLayer(TileLayer& tileLayer);
+
+	//Get Common Tile of a specific layer with x and y
+	CommonTile& getCommonTile(int x, int y, int layer);
+
+	uint16_t getMaxLayer();
 
 private:
-	std::vector<std::vector<CommonTile>> m_tiles;
-
-	uint16_t m_width, m_height;
+	std::vector<TileLayer> m_tileLayer;
+	UniqueTileLayer m_uniqueTileLayer;
 };

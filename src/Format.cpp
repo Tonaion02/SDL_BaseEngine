@@ -38,6 +38,11 @@ std::string stride(const std::string& origin, const std::string& x)
 	return origin.substr(origin.find(x) + strlen(x.c_str()), origin.size());
 }
 
+std::string stride(const std::string& origin, int start, int end)
+{
+	return origin.substr(start, end);
+}
+
 std::string remove(const std::string& origin, const std::string& x)
 {
 	int index;
@@ -47,7 +52,9 @@ std::string remove(const std::string& origin, const std::string& x)
 		index = copy.find(x);
 		if (index >= 0)
 			for (int i = index; i < index + x.size(); i++)
-				copy.erase(i);
+			{
+				copy.erase(i, 1);
+			}
 		else
 			break;
 	}
@@ -103,10 +110,43 @@ bool isCommentLine(const std::string& origin)
 	//return origin.find("//") >= 0;
 }
 
-//std::string removeFrontSpace(const std::string& origin) { return ""; }
-bool findInString(const std::string& origin, const std::string& x)
+bool isInString(const std::string& origin, const std::string& x)
 {
+	bool sem = origin.find(x) != -1;
 	return origin.find(x) != -1;
 }
 
+std::string removeFrontSpace(const std::string& origin)
+{
+	std::string space = " ";
+	std::string copy = origin;
+	while (true)
+	{
+		if (copy[0] == space[0])
+		{
+			copy = copy.substr(1, copy.size());
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return copy;
+}
+
+std::string removeQuotationMarks(const std::string& origin)
+{
+	int index;
+	std::string copy = origin;
+	
+	copy.erase(std::remove(copy.begin(), copy.end(), '\"'), copy.end());
+	
+	return copy;
+}
+
+int findInString(const std::string& origin, const std::string& x)
+{
+	return origin.find(x);
+}
 //Mehtod on String

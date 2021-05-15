@@ -55,6 +55,9 @@ void Game::update()
 
 		image = Image("data/images/we.png");
 
+		level = Level("data/levels/level0.tmx");
+
+		pos = { 0.0f, 0.0f };
 	}
 }
 
@@ -63,6 +66,12 @@ void Game::update()
 void Game::generateOutput()
 {
 	Game::get().clearColorScreen(Color(0, 255, 255, 255));
+
+	pos.x += 0.001f;
+	//pos.y += 0.001f;
+	level.m_graphicLayer[0][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
+	level.m_graphicLayer[0][1].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
+	level.m_graphicLayer[1][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
 
 	SDL_RenderPresent(SDL_Handler::get().getRenderer());
 }

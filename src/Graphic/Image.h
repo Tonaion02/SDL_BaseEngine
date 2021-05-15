@@ -113,6 +113,7 @@ public:
 	SDL_Surface* getRawSurface();
 
 	void blit(const Vector2i& pos, Surface& other);
+	void blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& endPos, Surface& other);
 
 	void setBlendMode(SDL_BlendMode blendMode);
 	void setAlpha(uint32_t alpha);

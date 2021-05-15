@@ -2,6 +2,8 @@
 
 #include "Graphic/Image.h"
 
+#include "World/Level.h"
+
 
 
 
@@ -41,6 +43,10 @@ protected:
 
 protected:
 	Image image;
+
+	Level level;
+
+	Vector2f pos;
 };
 
 //Rinominare tutti i getInstance() dei singleton come get()

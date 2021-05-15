@@ -176,12 +176,12 @@ void Image::blit(const Vector2i& pos)
 
 
 
-void Image::blit(const Vector2i& pos, const Vector2i& startRect, const Vector2i& dimRect)
+void Image::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dimRect)
 {
 	SDL_Rect srcRect, destRect;
 
-	srcRect.x = startRect.x;
-	srcRect.y = startRect.y;
+	srcRect.x = startPos.x;
+	srcRect.y = startPos.y;
 	srcRect.w = dimRect.x;
 	srcRect.h = dimRect.y;
 
@@ -295,9 +295,28 @@ void Surface::blit(const Vector2i& pos, Surface& other)
 
 
 
+void Surface::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dim, Surface& other)
+{
+	SDL_Rect srcRect, destRect;
+
+	srcRect.x = startPos.x;
+	srcRect.y = startPos.y;
+	srcRect.w = dim.x;
+	srcRect.h = dim.y;
+
+	destRect.x = pos.x;
+	destRect.y = pos.y;
+	destRect.w = dim.x;
+	destRect.h = dim.y;
+
+	SDL_BlitSurface(m_rawSurface, &srcRect, other.getRawSurface(), &destRect);
+}
+
+
+
 void Surface::free()
 {
-
+	SDL_FreeSurface(m_rawSurface);
 }
 //------------------------------------------------------------------------------------
 //Surface Class
