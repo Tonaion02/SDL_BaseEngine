@@ -31,7 +31,7 @@ private:
 	std::string m_filePathTileMap;
 	std::string m_filePathTileSet;
 
-	//TileSet m_tileSet;
+	//FORSE VA RESO PUBBLICO
 	TileSetHandler m_tileSetHandler;
 };
 //Aggiungere le funzioni render layerTileMap e render objecLayerTileMap

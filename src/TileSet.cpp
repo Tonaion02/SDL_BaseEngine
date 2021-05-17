@@ -111,7 +111,6 @@ TileSet::TileSet(const std::string& filePath, uint16_t firstVisualType, bool wit
 		//Search in File tile
 	}
 	//Excract info of TileSet from File
-	int wewe = 0;
 }
 
 

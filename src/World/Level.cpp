@@ -14,7 +14,6 @@
 //------------------------------------------------------------------------------------
 Level::Level(const std::string& filePathTileMap)
 {
-	std::vector<std::string> TileSetLines;
 	std::vector<std::string> TileMapLines = getlines(filePathTileMap);
 
 	//for (int i = 0; i < TileMapLines.size(); i++)
@@ -25,18 +24,10 @@ Level::Level(const std::string& filePathTileMap)
 	std::string& line = TileMapLines[0];
 
 	std::vector<std::vector<uint16_t>> bufferTiles;
-	
-	std::vector<CommonTile> commonTileSet;
 
-	Surface commonGraphicTileSet;
-	int widthTileSet;
-	int heightTileSet;
-	int nTileSetX;
-	int nTileSetY;
+	int currentNTileMap = -1;
 
-	int currentNTileMap = 0;
-	m_tileMaps.push_back(TileMap());
-
+	//Excract info from File
 	for (int i = 0; i < TileMapLines.size(); i++)
 	{
 		line = TileMapLines[i];
@@ -93,12 +84,13 @@ Level::Level(const std::string& filePathTileMap)
 					line = remove(line, "/");
 					line = remove(line, ">");
 					std::vector<std::string> infoAboutTileSet = split(line, " ");
+					std::string filePathTileSet;
 					int firstVisualType;
 					for (auto info : infoAboutTileSet)
 					{
 						if (isInString(info, "source="))
 						{
-							m_filePathTileSet = removeQuotationMarks(stride(line, "source="));
+							filePathTileSet = removeQuotationMarks(stride(line, "source="));
 						}
 						else if (isInString(info, "firstgid="))
 						{
@@ -109,126 +101,36 @@ Level::Level(const std::string& filePathTileMap)
 
 
 
-					//Try to load TileSet
-					TileSet tileSet = TileSet("data/levels/" + m_filePathTileSet, firstVisualType, true);
+					//Load a TileSet
+					TileSet tileSet = TileSet("data/levels/" + filePathTileSet, firstVisualType, true);
 					m_tileSetHandler.addTileSet(tileSet);
-					//m_tileSet = TileSet("data/levels/" + m_filePathTileSet, firstVisualType, true);
-					//Try to load TileSet
-
-
-
-					//Load TileSet
-					//TileSetLines = getlines("data/levels/" + m_filePathTileSet);
-					//Load TileSet
-
-
-
-					//
-					//for (auto info : TileSetLines)
-					//{
-					//	if (isInString(info, "<tileset"))
-					//	{
-
-					//	}
-					//	else if (isInString(info, "<image"))
-					//	{
-					//		info = removeFrontSpace(info);
-					//		info = remove(info, "/");
-					//		info = remove(info, ">");
-					//		std::string filePathImageCommonTileSet;
-					//		std::vector<std::string> strings = split(info, " ");
-					//		for (auto s : strings)
-					//		{
-					//			if (isInString(s, "source="))
-					//			{
-					//				filePathImageCommonTileSet = removeQuotationMarks(stride(s, "source="));
-					//				commonGraphicTileSet = Surface("data/levels/" + filePathImageCommonTileSet);
-					//			}
-					//			else if (isInString(s, "width="))
-					//			{
-					//				widthTileSet = std::stoi(removeQuotationMarks(stride(s, "width=")));
-					//			}
-					//			else if (isInString(s, "height="))
-					//			{
-					//				heightTileSet = std::stoi(removeQuotationMarks(stride(s, "height=")));
-					//			}
-					//		}
-					//	}
-					//	else if (isInString(info,"<tile"))
-					//	{
-					//		info = removeFrontSpace(info);
-					//		info = remove(info, "/");
-					//		info = remove(info, ">");
-					//		std::vector<std::string> infoAboutTile = split(info, " ");
-					//		uint16_t visualType;
-					//		RealType realType;
-
-					//		for (auto inf : infoAboutTile)
-					//		{
-					//			if (isInString(inf, "id="))
-					//			{
-					//				visualType = std::stoi(removeQuotationMarks(stride(inf, "id=")));
-					//			}
-					//			else if (isInString(inf, "type="))
-					//			{
-					//				realType = (RealType)std::stoi(removeQuotationMarks(stride(inf, "type=")));
-					//			}
-					//		}
-					//		commonTileSet.push_back(CommonTile(realType, visualType));
-					//	}
-					//}
-					//
+					//Load a TileSet
 				}
 				//Search TileSet and take info from tileset
+
+
+
+				//Search a new group and add a new TileMap
+				//Ricordati di porre prima l'objectgroup
+				else if (isInString(line, "<group"))
+				{
+					currentNTileMap++;
+					m_tileMaps.push_back(TileMap());
+				}
+				//Search a new group and add a new TileMap
 
 
 
 				//Search Layer and take info from layer
 				else if (isInString(line, "<layer"))
 				{
-					//Excract info about layer
-					line = removeFrontSpace(line);
-					line = remove(line, ">");
-					std::vector<std::string> infoAboutLayer = split(line, " ");
-					std::string layerName;
-					for (auto info : infoAboutLayer)
-					{
-						if (isInString(info, "name="))
-						{
-							layerName = removeQuotationMarks(stride(info, "name="));
-						}
-					}
-					//Excract info about layer
-
-
-
 					//Avance the line
 					i++;
 					line = TileMapLines[i];
+					i++;
 					//Avance the line
 
-
-
-					//Decide in base to layer info if i must create another tileMap to add
-					//Layer0TileMap0
-					//DA TESTARE
-					if (isInString(layerName, "Layer"))
-					{
-						int indexForString = findInString(layerName, "TileMap");
-						layerName = stride(layerName, indexForString, layerName.size());
-						int nTileMap = std::stoi(stride(layerName, "TileMap"));
-						if (nTileMap > currentNTileMap)
-						{
-							m_tileMaps.push_back(TileMap());
-							currentNTileMap++;
-						}
-					}
-					//Decide in base to layer info if i must create another tileMap to add
-
-
-
 					//Excract Layer
-					i++;
 					TileLayer workingLayer = TileLayer(m_width, m_height);
 
 					std::vector<std::string> bufferTilesCurrentLine;
@@ -265,47 +167,11 @@ Level::Level(const std::string& filePathTileMap)
 		}
 		//Search TileMap
 	}
+	//Excract info from File
 
 
 
-	//In testing
-	//nTileSetX = widthTileSet / m_tileWidth;
-	//nTileSetY = heightTileSet / m_tileHeight;
-	//Surface temp;
-	//for (int i = 0; i < m_tileMaps.size(); i++)
-	//{
-	//	for(int layer = 0;layer < m_tileMaps[i].getMaxLayer();layer++)
-	//	{
-	//		temp = Surface(Color(0, 0, 0, 0), m_width * m_tileWidth, m_height * m_tileHeight);
-	//		for (int y = 0; y < m_height; y++)
-	//		{
-	//			for (int x = 0; x < m_width; x++)
-	//			{
-	//				RealType realType = m_tileMaps[i].getCommonTile(x, y, layer).realType;
-	//				if (realType > 0)
-	//				{
-	//					uint16_t visualType = m_tileMaps[i].getCommonTile(x, y, layer).visualType;
-	//					int yTileSet = visualType / nTileSetX;
-	//					int xTileSet = visualType - (yTileSet * nTileSetX);
-	//					commonGraphicTileSet.blit({ x * m_tileWidth, y * m_tileHeight }, { xTileSet * m_tileWidth, yTileSet * m_tileHeight }, { m_tileWidth, m_tileHeight }, temp);
-	//				}
-	//			}
-	//		}
-	//		int necessityOfAnotherLayer = m_graphicLayer.size() - 1;
-	//		if (necessityOfAnotherLayer < i)
-	//		{
-	//			m_graphicLayer.push_back(std::vector<Image>(0));
-	//		}
-	//		m_graphicLayer[i].push_back(Image(temp.getRawSurface()));
-	//		temp.free();
-	//	}
-	//	
-	//}
-	//In testing
-
-
-
-	//In testing 2.0
+	//Construct Static Graphic Layer
 	Surface temp;
 	for (int i = 0; i < m_tileMaps.size(); i++)
 	{
@@ -320,9 +186,6 @@ Level::Level(const std::string& filePathTileMap)
 					if (realType > 0)
 					{
 						uint16_t visualType = m_tileMaps[i].getCommonTile(x, y, layer).visualType;
-						//int yTileSet = visualType / nTileSetX;
-						//int xTileSet = visualType - (yTileSet * nTileSetX);
-						//commonGraphicTileSet.blit({ x * m_tileWidth, y * m_tileHeight }, { xTileSet * m_tileWidth, yTileSet * m_tileHeight }, { m_tileWidth, m_tileHeight }, temp);
 						m_tileSetHandler.blitSurfaceTile(visualType, { x * m_tileWidth, y * m_tileHeight }, temp);
 					}
 				}
@@ -337,7 +200,7 @@ Level::Level(const std::string& filePathTileMap)
 		}
 
 	}
-	//In testing 2.0
+	//Construct Static Graphic Layer
 
 
 
