@@ -4,6 +4,8 @@
 
 #include "World/Level.h"
 
+#include "TileSet.h"
+
 
 
 
@@ -47,6 +49,8 @@ protected:
 	Level level;
 
 	Vector2f pos;
+
+	TileSet tileSet;
 };
 
 //Rinominare tutti i getInstance() dei singleton come get()

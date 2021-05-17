@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TileMap.h"
+#include "TileSet.h"
+
 #include "Graphic/Image.h"
 
 
@@ -28,8 +30,11 @@ private:
 	uint16_t m_tileWidth, m_tileHeight;
 	std::string m_filePathTileMap;
 	std::string m_filePathTileSet;
+
+	//TileSet m_tileSet;
+	TileSetHandler m_tileSetHandler;
 };
-//Probabilmente bisogna aggiungere la tileWidth e tileHeight
+//Aggiungere le funzioni render layerTileMap e render objecLayerTileMap
 
 //PUNTI FONDAMENTALI CREAZIONE DI UN LIVELLO
 //-STARE ATTENTI AI NOMI CHE SI UTILIZZANO PER I VARI LAYER, IN PARTICOLARE AL NUMERO DELLA TILEMAP AL QUALE FARE RIFERIMENTO

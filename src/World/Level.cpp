@@ -93,77 +93,90 @@ Level::Level(const std::string& filePathTileMap)
 					line = remove(line, "/");
 					line = remove(line, ">");
 					std::vector<std::string> infoAboutTileSet = split(line, " ");
+					int firstVisualType;
 					for (auto info : infoAboutTileSet)
 					{
 						if (isInString(info, "source="))
 						{
 							m_filePathTileSet = removeQuotationMarks(stride(line, "source="));
 						}
+						else if (isInString(info, "firstgid="))
+						{
+							firstVisualType = std::stoi(removeQuotationMarks(stride(line, "firstgid="))) - 1;
+						}
 					}
 					//Search filePath of TileSet
 
 
 
+					//Try to load TileSet
+					TileSet tileSet = TileSet("data/levels/" + m_filePathTileSet, firstVisualType, true);
+					m_tileSetHandler.addTileSet(tileSet);
+					//m_tileSet = TileSet("data/levels/" + m_filePathTileSet, firstVisualType, true);
+					//Try to load TileSet
+
+
+
 					//Load TileSet
-					TileSetLines = getlines("data/levels/" + m_filePathTileSet);
+					//TileSetLines = getlines("data/levels/" + m_filePathTileSet);
 					//Load TileSet
 
 
 
 					//
-					for (auto info : TileSetLines)
-					{
-						if (isInString(info, "<tileset"))
-						{
+					//for (auto info : TileSetLines)
+					//{
+					//	if (isInString(info, "<tileset"))
+					//	{
 
-						}
-						else if (isInString(info, "<image"))
-						{
-							info = removeFrontSpace(info);
-							info = remove(info, "/");
-							info = remove(info, ">");
-							std::string filePathImageCommonTileSet;
-							std::vector<std::string> strings = split(info, " ");
-							for (auto s : strings)
-							{
-								if (isInString(s, "source="))
-								{
-									filePathImageCommonTileSet = removeQuotationMarks(stride(s, "source="));
-									commonGraphicTileSet = Surface("data/levels/" + filePathImageCommonTileSet);
-								}
-								else if (isInString(s, "width="))
-								{
-									widthTileSet = std::stoi(removeQuotationMarks(stride(s, "width=")));
-								}
-								else if (isInString(s, "height="))
-								{
-									heightTileSet = std::stoi(removeQuotationMarks(stride(s, "height=")));
-								}
-							}
-						}
-						else if (isInString(info,"<tile"))
-						{
-							info = removeFrontSpace(info);
-							info = remove(info, "/");
-							info = remove(info, ">");
-							std::vector<std::string> infoAboutTile = split(info, " ");
-							uint16_t visualType;
-							RealType realType;
+					//	}
+					//	else if (isInString(info, "<image"))
+					//	{
+					//		info = removeFrontSpace(info);
+					//		info = remove(info, "/");
+					//		info = remove(info, ">");
+					//		std::string filePathImageCommonTileSet;
+					//		std::vector<std::string> strings = split(info, " ");
+					//		for (auto s : strings)
+					//		{
+					//			if (isInString(s, "source="))
+					//			{
+					//				filePathImageCommonTileSet = removeQuotationMarks(stride(s, "source="));
+					//				commonGraphicTileSet = Surface("data/levels/" + filePathImageCommonTileSet);
+					//			}
+					//			else if (isInString(s, "width="))
+					//			{
+					//				widthTileSet = std::stoi(removeQuotationMarks(stride(s, "width=")));
+					//			}
+					//			else if (isInString(s, "height="))
+					//			{
+					//				heightTileSet = std::stoi(removeQuotationMarks(stride(s, "height=")));
+					//			}
+					//		}
+					//	}
+					//	else if (isInString(info,"<tile"))
+					//	{
+					//		info = removeFrontSpace(info);
+					//		info = remove(info, "/");
+					//		info = remove(info, ">");
+					//		std::vector<std::string> infoAboutTile = split(info, " ");
+					//		uint16_t visualType;
+					//		RealType realType;
 
-							for (auto inf : infoAboutTile)
-							{
-								if (isInString(inf, "id="))
-								{
-									visualType = std::stoi(removeQuotationMarks(stride(inf, "id=")));
-								}
-								else if (isInString(inf, "type="))
-								{
-									realType = (RealType)std::stoi(removeQuotationMarks(stride(inf, "type=")));
-								}
-							}
-							commonTileSet.push_back(CommonTile(realType, visualType));
-						}
-					}
+					//		for (auto inf : infoAboutTile)
+					//		{
+					//			if (isInString(inf, "id="))
+					//			{
+					//				visualType = std::stoi(removeQuotationMarks(stride(inf, "id=")));
+					//			}
+					//			else if (isInString(inf, "type="))
+					//			{
+					//				realType = (RealType)std::stoi(removeQuotationMarks(stride(inf, "type=")));
+					//			}
+					//		}
+					//		commonTileSet.push_back(CommonTile(realType, visualType));
+					//	}
+					//}
 					//
 				}
 				//Search TileSet and take info from tileset
@@ -230,7 +243,7 @@ Level::Level(const std::string& filePathTileMap)
 							int id = std::stoi(bufferTilesCurrentLine[index]) - 1;
 							if (id >= 0)
 							{
-								workingLayer.m_tiles[j][index] = commonTileSet[id];
+								workingLayer.m_tiles[j][index] = m_tileSetHandler.getTile(id);
 							}
 						}
 
@@ -256,12 +269,47 @@ Level::Level(const std::string& filePathTileMap)
 
 
 	//In testing
-	nTileSetX = widthTileSet / m_tileWidth;
-	nTileSetY = heightTileSet / m_tileHeight;
+	//nTileSetX = widthTileSet / m_tileWidth;
+	//nTileSetY = heightTileSet / m_tileHeight;
+	//Surface temp;
+	//for (int i = 0; i < m_tileMaps.size(); i++)
+	//{
+	//	for(int layer = 0;layer < m_tileMaps[i].getMaxLayer();layer++)
+	//	{
+	//		temp = Surface(Color(0, 0, 0, 0), m_width * m_tileWidth, m_height * m_tileHeight);
+	//		for (int y = 0; y < m_height; y++)
+	//		{
+	//			for (int x = 0; x < m_width; x++)
+	//			{
+	//				RealType realType = m_tileMaps[i].getCommonTile(x, y, layer).realType;
+	//				if (realType > 0)
+	//				{
+	//					uint16_t visualType = m_tileMaps[i].getCommonTile(x, y, layer).visualType;
+	//					int yTileSet = visualType / nTileSetX;
+	//					int xTileSet = visualType - (yTileSet * nTileSetX);
+	//					commonGraphicTileSet.blit({ x * m_tileWidth, y * m_tileHeight }, { xTileSet * m_tileWidth, yTileSet * m_tileHeight }, { m_tileWidth, m_tileHeight }, temp);
+	//				}
+	//			}
+	//		}
+	//		int necessityOfAnotherLayer = m_graphicLayer.size() - 1;
+	//		if (necessityOfAnotherLayer < i)
+	//		{
+	//			m_graphicLayer.push_back(std::vector<Image>(0));
+	//		}
+	//		m_graphicLayer[i].push_back(Image(temp.getRawSurface()));
+	//		temp.free();
+	//	}
+	//	
+	//}
+	//In testing
+
+
+
+	//In testing 2.0
 	Surface temp;
 	for (int i = 0; i < m_tileMaps.size(); i++)
 	{
-		for(int layer = 0;layer < m_tileMaps[i].getMaxLayer();layer++)
+		for (int layer = 0; layer < m_tileMaps[i].getMaxLayer(); layer++)
 		{
 			temp = Surface(Color(0, 0, 0, 0), m_width * m_tileWidth, m_height * m_tileHeight);
 			for (int y = 0; y < m_height; y++)
@@ -272,9 +320,10 @@ Level::Level(const std::string& filePathTileMap)
 					if (realType > 0)
 					{
 						uint16_t visualType = m_tileMaps[i].getCommonTile(x, y, layer).visualType;
-						int yTileSet = visualType / nTileSetX;
-						int xTileSet = visualType - (yTileSet * nTileSetX);
-						commonGraphicTileSet.blit({ x * m_tileWidth, y * m_tileHeight }, { xTileSet * m_tileWidth, yTileSet * m_tileHeight }, { m_tileWidth, m_tileHeight }, temp);
+						//int yTileSet = visualType / nTileSetX;
+						//int xTileSet = visualType - (yTileSet * nTileSetX);
+						//commonGraphicTileSet.blit({ x * m_tileWidth, y * m_tileHeight }, { xTileSet * m_tileWidth, yTileSet * m_tileHeight }, { m_tileWidth, m_tileHeight }, temp);
+						m_tileSetHandler.blitSurfaceTile(visualType, { x * m_tileWidth, y * m_tileHeight }, temp);
 					}
 				}
 			}
@@ -286,9 +335,9 @@ Level::Level(const std::string& filePathTileMap)
 			m_graphicLayer[i].push_back(Image(temp.getRawSurface()));
 			temp.free();
 		}
-		
+
 	}
-	//In testing
+	//In testing 2.0
 
 
 
@@ -301,7 +350,7 @@ Level::Level(const std::string& filePathTileMap)
 			std::string line = "";
 			for (int x = 0; x < m_width; x++)
 			{
-				line += std::to_string(m_tileMaps[i].getCommonTile(x, y, 0).realType).c_str();
+				line += std::to_string(m_tileMaps[i].getCommonTile(x, y, 0).visualType).c_str();
 			}
 			std::cout << line << std::endl;
 		}

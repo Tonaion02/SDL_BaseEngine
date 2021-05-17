@@ -55,7 +55,7 @@ void Game::update()
 
 		image = Image("data/images/we.png");
 
-		level = Level("data/levels/level0.tmx");
+		level = Level("data/levels/level1.tmx");
 
 		pos = { 0.0f, 0.0f };
 	}
@@ -70,8 +70,8 @@ void Game::generateOutput()
 	pos.x += 0.001f;
 	//pos.y += 0.001f;
 	level.m_graphicLayer[0][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
-	level.m_graphicLayer[0][1].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
-	level.m_graphicLayer[1][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
+	//level.m_graphicLayer[0][1].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
+	//level.m_graphicLayer[1][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
 
 	SDL_RenderPresent(SDL_Handler::get().getRenderer());
 }
