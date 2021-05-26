@@ -110,6 +110,81 @@ Level::Level(const std::string& filePathTileMap)
 
 
 
+				//Search a objectgroup(Object Layer)
+				else if (isInString(line, "<objectgroup"))
+				{
+					line = removeFrontSpace(line);
+					line = remove(line, ">");
+					std::vector<std::string> infoAboutObjectgroup = split(line, " ");
+					int choice=-1;
+
+					//Excract info from intestation of ObjectGroup
+					for (auto info : infoAboutObjectgroup)
+					{
+						if (isInString(info, "name="))
+						{
+							info = removeQuotationMarks(stride(info, "name="));
+							//Controll if is a UniqueTileLayer
+							if (info == "UniqueTile")
+							{
+								choice = 0;
+							}
+							//Controll if is a UniqueTileLayer
+
+						}
+					}
+					//Excract info from intestation of ObjectGroup
+
+					
+
+					//Decide if you create a UniqueTileLayer or EnemyLayer or other
+					i++;
+					line = TileMapLines[i];
+					if (choice == 0)
+					{
+						m_tileMaps[currentNTileMap].m_uniqueTileLayer = UniqueTileLayer({ m_width, m_height });
+						
+						while (!isInString(TileMapLines[i], "</objectgroup"))
+						{
+							line = TileMapLines[i];
+							if (isInString(line, "<object"))
+							{
+								line = removeFrontSpace(line);
+								//In base of presence of this "/" create two case, in the first the object is totaly equal to that in template, in other case is modified and search properties modified
+								line = remove(line, "/");
+								line = remove(line, ">");
+								
+								std::vector<std::string> infoAboutObject = split(line, " ");
+								std::string filePathTemplate;
+								Vector2i posObject = { 0, 0 };
+
+								for (auto info : infoAboutObject)
+								{
+									if (isInString(info, "template="))
+									{
+										filePathTemplate = removeQuotationMarks(stride(info, "template="));
+									}
+									else if (isInString(info, "x="))
+									{
+										posObject.x = std::stoi(removeQuotationMarks(stride(info, "x="))) / m_tileWidth;
+									}
+									else if (isInString(info, "y="))
+									{
+										posObject.y = std::stoi(removeQuotationMarks(stride(info, "y="))) / m_tileHeight - 1;
+									}
+								}
+
+								m_tileMaps[currentNTileMap].m_uniqueTileLayer.loadUniqueTileFromTemplate(filePathTemplate, posObject, m_tileSetHandler);
+							}
+							i++;
+						}
+					}
+					//Decide if you create a UniqueTileLayer or EnemyLayer or other
+				}
+				//Search a objectgroup(Object Layer)
+
+
+
 				//Search a new group and add a new TileMap
 				//Ricordati di porre prima l'objectgroup
 				else if (isInString(line, "<group"))
@@ -156,7 +231,6 @@ Level::Level(const std::string& filePathTileMap)
 
 
 					//Add Layer to TileMap
-					//Provissorio quella che è l'ingradimento in questa parte della tileMap, successivamente distinguere in base al nome quale è la tilemap di appartenenza
 					m_tileMaps[currentNTileMap].addTileLayer(workingLayer);
 					//Add Layer to TileMap
 				}

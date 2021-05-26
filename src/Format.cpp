@@ -149,4 +149,17 @@ int findInString(const std::string& origin, const std::string& x)
 {
 	return origin.find(x);
 }
+
+bool fromStringToBool(const std::string& origin)
+{
+	//AUMENTARE VERSATILITA E SOPRATUTTO AGGIUNGERE ASSERT NEL CASO NON SIA UGUALE A NESSUNO DEI DUE
+	if (origin == "false")
+	{
+		return false;
+	}
+	else if (origin == "true")
+	{
+		return true;
+	}
+}
 //Mehtod on String

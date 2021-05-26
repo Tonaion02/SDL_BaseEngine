@@ -26,7 +26,11 @@ public:
 
 	uint16_t getFirstVisualType();
 
+	std::string getFilePath();
+
 	CommonTile& getTile(int index);
+
+	const Vector2i getTileDimension();
 
 private:
 	uint16_t m_columns;
@@ -58,9 +62,14 @@ public:
 	void addTileSet(TileSet& tileSet);
 
 	CommonTile& getTile(int index);
+	CommonTile& getTile(int index, const std::string& nameTileSet);
 
+	void blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos);
+	void blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other);
 	void blitImageTile(uint16_t visualType, const Vector2i& pos);
 	void blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other);
+
+	const Vector2i getTileDimension();
 private:
 	std::vector<TileSet> m_tileSets;
 };

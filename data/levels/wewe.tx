@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="level0.tsx"/>
+ <object gid="12" width="32" height="32">
+  <properties>
+   <property name="UniqueTileType" type="int" value="7"/>
+   <property name="destructed" type="bool" value="false"/>
+   <property name="tileset" type="string" value="level0.tsx"/>
+   <property name="images" type="string" value="4,5"/>
+  </properties>
+ </object>
+</template>

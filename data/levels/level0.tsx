@@ -3,7 +3,7 @@
  <image source="buch-outdoor.png" width="384" height="192"/>
  <tile id="0" type="1"/>
  <tile id="1" type="2"/>
- <tile id="2" type="1"/>
+ <tile id="2" type="7"/>
  <tile id="3" type="1"/>
  <tile id="4" type="1"/>
  <tile id="5" type="1"/>

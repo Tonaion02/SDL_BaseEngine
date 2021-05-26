@@ -23,8 +23,9 @@ public:
 public:
 	std::vector<std::vector<Image>> m_graphicLayer;
 	
-private:
 	std::vector<TileMap> m_tileMaps;
+private:
+	
 	
 	uint16_t m_width, m_height, m_maxZ;
 	uint16_t m_tileWidth, m_tileHeight;

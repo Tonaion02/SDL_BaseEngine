@@ -1,7 +1,12 @@
 #pragma once
 
 #include "Math/Vector.h"
+#include "Format.h"
+
 #include "Tile.h"
+
+#include "UniqueTile.h"
+
 
 
 
@@ -24,8 +29,19 @@ class UniqueTileLayer
 {
 public:
 	UniqueTileLayer() {}
+	UniqueTileLayer(const Vector2i& dimension);
 
 	//Aggiungere tutte le liste di UniqueTile
+
+	bool loadUniqueTileFromTemplate(const std::string& nameTemplate, const Vector2i& pos, TileSetHandler& tileSetHandler);
+public:
+	//temporaneamente un std::vector
+	std::vector<DestructbleTile> m_destructbleTiles;
+	std::vector<Vector2i> m_pos;
+
+	std::vector<std::vector<uint16_t>> m_indexMatrix;
+
+private:
 };
 
 
@@ -47,7 +63,9 @@ public:
 
 	uint16_t getMaxLayer();
 
+public:
+	UniqueTileLayer m_uniqueTileLayer;
+
 private:
 	std::vector<TileLayer> m_tileLayer;
-	UniqueTileLayer m_uniqueTileLayer;
 };

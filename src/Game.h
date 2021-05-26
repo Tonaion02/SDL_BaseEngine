@@ -42,6 +42,8 @@ protected:
 
 	bool m_isFirst;
 
+	Vector2i screenDimension;
+
 
 protected:
 	Image image;

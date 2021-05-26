@@ -2,6 +2,8 @@
 
 #include "PrecompiledHeaders.h"
 
+#include "Graphic/Image.h"
+
 
 
 
@@ -9,14 +11,16 @@
 //Sostituire void con ground
 enum RealType
 {
-	NoneTileRealType = -1,
-	Void,
-	Obstacle,
-	Surfable,
-	Destructble,
-	Chest,
-	Openable,
-	Grass
+	NoneTileRealType = 0,
+	Void, //1
+	Graphic, //2
+	Ground, //3
+	Obstacle, //4
+	Sea, //5
+	Grass, //6
+	Destructble, //7
+	Chest, //8
+	Openable //9
 };
 
 
@@ -40,7 +44,7 @@ struct CommonTile
 		case NoneTileRealType:
 		case Void:
 		case Obstacle:
-		case Surfable:
+		case Sea:
 			return false;
 
 		case Destructble:
@@ -55,7 +59,7 @@ struct CommonTile
 		switch (realType)
 		{
 		case Obstacle:
-		case Surfable:
+		case Sea:
 		case Chest:
 			return false;
 
@@ -65,7 +69,7 @@ struct CommonTile
 		}
 	}
 
-	bool isSurfable()
+	bool isSea()
 	{
 		switch (realType)
 		{
@@ -75,51 +79,9 @@ struct CommonTile
 		case Chest:
 			return false;
 
-		case Surfable:
+		case Sea:
 		case Grass:
 			return true;
 		}
 	}
-};
-
-
-
-
-
-struct UniqueTile
-{
-	UniqueTile() {}
-};
-
-
-
-
-
-struct DestructbleTile : public UniqueTile
-{
-	DestructbleTile() :UniqueTile() {}
-
-	bool isDestroyed;
-};
-
-
-
-
-
-struct ChestTile : public UniqueTile
-{
-	ChestTile() :UniqueTile() {}
-
-	bool isOpened;
-};
-
-
-
-
-
-struct OpenableTile : public UniqueTile
-{
-	OpenableTile() :UniqueTile() {}
-
-	bool isOpened;
 };

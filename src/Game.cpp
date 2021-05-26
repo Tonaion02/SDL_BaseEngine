@@ -15,7 +15,8 @@ void Game::init()
 {
 	SDL_Init(SDL_INIT_EVENTS);
 
-	SDL_Handler::get().init();
+	screenDimension = { 900, 720 };
+	SDL_Handler::get().init(screenDimension.x, screenDimension.y);
 
 	m_isRunning = true;
 	m_isFirst = true;
@@ -57,8 +58,12 @@ void Game::update()
 
 		level = Level("data/levels/level3.tmx");
 
-		pos = { 0.0f, 0.0f };
+		SDL_Log(std::to_string(level.m_tileMaps[0].getCommonTile(3, 1, 0).realType).c_str());
+
+		pos = { 700.0f, 0.0f };
 	}
+
+	pos.x -= 0.1f;
 }
 
 
@@ -66,12 +71,93 @@ void Game::update()
 void Game::generateOutput()
 {
 	Game::get().clearColorScreen(Color(0, 255, 255, 255));
+	
+	//Rendering Level
+	Vector2i intPosPlayer = (Vector2i)pos;
+	Vector2i intTilePosPlayer = { intPosPlayer.x / level.getTileWidth(), intPosPlayer.y / level.getTileHeight() };
 
-	pos.x += 0.001f;
+	Vector2i nTileToRender = { (((screenDimension.x / level.getTileWidth()) - 1) / 2), (((screenDimension.y / level.getTileHeight()) - 1) / 2) };
+	Vector2i backToRender = { intTilePosPlayer.x - nTileToRender.x - 1,intTilePosPlayer.y - nTileToRender.y -1 };
+	Vector2i frontToRender = { intTilePosPlayer.x + nTileToRender.x + 1,intTilePosPlayer.y + nTileToRender.y + 1 };
 
-	level.m_graphicLayer[0][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
-	level.m_graphicLayer[0][1].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
-	level.m_graphicLayer[1][0].blit({ 0, 0 }, (Vector2i)pos, { 900, 720 });
+	Vector2i startRectRendering = intPosPlayer - Vector2i(screenDimension.x / 2, screenDimension.y / 2);
+	Vector2i endRectRendering = intPosPlayer + Vector2i(screenDimension.x / 2, screenDimension.y / 2);
+
+	//Controll value rendering
+	if (startRectRendering.x <= 0)
+	{
+		startRectRendering.x = 0;
+		endRectRendering.x = screenDimension.x;
+	}
+	else if (endRectRendering.x >= (level.getWidth() * level.getTileWidth()))
+	{
+		startRectRendering.x = (level.getWidth() * level.getTileWidth()) - screenDimension.x;
+		endRectRendering.x = (level.getWidth() * level.getTileWidth());
+	}
+	if (startRectRendering.y <= 0)
+	{
+		startRectRendering.y = 0;
+		endRectRendering.y = screenDimension.y;
+	}
+	else if (endRectRendering.y >= (level.getHeight() * level.getTileHeight()))
+	{
+		startRectRendering.y = (level.getHeight() * level.getTileHeight()) - screenDimension.y;
+		endRectRendering.y = (level.getHeight() * level.getTileHeight());
+	}
+	//Controll value rendering
+
+	//Controll value
+	//Momentaneo
+	//backToRender.y = 0;
+	//frontToRender.y = screenDimension.y / level.getTileHeight();
+	if (backToRender.x < 0)
+	{
+		backToRender.x = 0;
+		frontToRender.x = screenDimension.x / level.getTileHeight();
+	}
+
+	if (backToRender.y < 0)
+	{
+		backToRender.y = 0;
+		frontToRender.y = screenDimension.y / level.getTileHeight();
+	}
+
+
+	Vector2i posImageLevel = { (level.getWidth() * level.getTileWidth()) - screenDimension.x, 0};
+	//Momentaneo
+	//Controll value
+
+	Vector2i renderAdj = { intPosPlayer.x - (intTilePosPlayer.x * level.getTileWidth()), intPosPlayer.y - (intTilePosPlayer.y * level.getTileHeight()) };
+
+	for (int i = 0; i < level.m_tileMaps.size(); i++)
+	{
+		level.m_graphicLayer[i][0].blit({ 0, 0 }, startRectRendering, screenDimension);
+
+		//Rendering UniqueTileLayer
+		for (int y = backToRender.y; y < frontToRender.y; y++)
+		{
+			int rendY = (y * level.getTileHeight()) - startRectRendering.y;
+			for (int x = backToRender.x; x < frontToRender.x; x++)
+			{
+				int rendX = (x * level.getTileWidth()) - startRectRendering.x;
+				//Momentaneo
+				//image.blit({ rendY, rendX });
+				if (level.m_tileMaps[i].getCommonTile(x, y, 0).isUnique())
+				{
+					int index = level.m_tileMaps[i].m_uniqueTileLayer.m_indexMatrix[y][x];
+					level.m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].getCurrentImage().blit({ rendX, rendY });
+				}
+				//Momentaneo
+			}
+		}
+		//Rendering UniqueTileLayer
+
+		for (int j = 1; j < level.m_graphicLayer[i].size(); j++)
+		{
+			level.m_graphicLayer[i][j].blit({ 0, 0 }, startRectRendering, screenDimension);
+		}
+	}
+	//Rendering Level
 
 	SDL_RenderPresent(SDL_Handler::get().getRenderer());
 }

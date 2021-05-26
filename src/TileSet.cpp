@@ -168,9 +168,23 @@ uint16_t TileSet::getFirstVisualType()
 
 
 
+std::string TileSet::getFilePath()
+{
+	return m_filePath;
+}
+
+
+
 CommonTile& TileSet::getTile(int index)
 {
 	return m_tiles[index];
+}
+
+
+
+const Vector2i TileSet::getTileDimension()
+{
+	return m_tileDimension;
 }
 //------------------------------------------------------------------------------
 //TileSet Class
@@ -186,6 +200,40 @@ CommonTile& TileSet::getTile(int index)
 void TileSetHandler::addTileSet(TileSet& tileSet)
 {
 	m_tileSets.push_back(tileSet);
+}
+
+
+
+void TileSetHandler::blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos)
+{
+	int j = 0;
+	for (int i = 0; i < m_tileSets.size(); i++)
+	{
+		if (isInString(m_tileSets[i].getFilePath(), nameTileSet))
+		{
+			j = i;
+			break;
+		}
+	}
+
+	m_tileSets[j].blitImageTile(index, pos);
+}
+
+
+
+void TileSetHandler::blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other)
+{
+	int j = 0;
+	for (int i = 0; i < m_tileSets.size(); i++)
+	{
+		if (isInString(m_tileSets[i].getFilePath(), nameTileSet))
+		{
+			j = i;
+			break;
+		}
+	}
+
+	m_tileSets[j].blitSurfaceTile(index, pos, other);
 }
 
 
@@ -240,6 +288,30 @@ CommonTile& TileSetHandler::getTile(int index)
 	}
 
 	return m_tileSets[j].getTile(index - m_tileSets[j].getFirstVisualType());
+}
+
+
+
+CommonTile& TileSetHandler::getTile(int index, const std::string& nameTileSet)
+{
+	int j = 0;
+	for (int i = 0; i < m_tileSets.size(); i++)
+	{
+		if (isInString(m_tileSets[i].getFilePath(), nameTileSet))
+		{
+			j = i;
+			break;
+		}
+	}
+
+	return m_tileSets[j].getTile(index);
+}
+
+
+
+const Vector2i TileSetHandler::getTileDimension()
+{
+	return m_tileSets[0].getTileDimension();
 }
 //------------------------------------------------------------------------------
 //TileSetHandler Class
