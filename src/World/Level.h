@@ -38,5 +38,14 @@ private:
 //Aggiungere le funzioni render layerTileMap e render objecLayerTileMap
 
 //PUNTI FONDAMENTALI CREAZIONE DI UN LIVELLO
-//-STARE ATTENTI AI NOMI CHE SI UTILIZZANO PER I VARI LAYER, IN PARTICOLARE AL NUMERO DELLA TILEMAP AL QUALE FARE RIFERIMENTO
+//-ORDINE DEI LAYER:
+//		°TileLayer(functionality)
+//		°UniqueTileLayer
+//		°OtherLayer(No functionality)
+//
 //-STARE ATTENTI A STABILIRE I TYPE DI TUTTO IL TILESET, NON SOLAMENTE QUELLI CHE UTILIZZIAMO, MAGARI ANCHE SETTARLI SOLO COME 0, MA E' NECESSARIO STABILIRLO(IN FUTURO RIMUOVERE TALE OBBLIGO)
+//
+//-AGGIUNTA DI UN UNIQUETILE:
+//		°Porre prima nel TileLayer(functionality) il tile con il giusto type
+//		°Inserire solo successivamente un oggetto qualsiasi
+//		°Aprire un template, .tx, e selezionando l'oggetto o gli oggetti rimpiazzare con template 

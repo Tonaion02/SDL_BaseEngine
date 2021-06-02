@@ -2,6 +2,8 @@
 
 #include "PrecompiledHeaders.h"
 
+#include "Math/Vector.h"
+
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #include "SDL_image.h"
@@ -19,7 +21,7 @@ public:
 		return instance;
 	}
 
-	void init(int resolutionX=900, int resolutionY=720);
+	void init(const Vector2i& dimension);
 
 	SDL_Window* getWindow();
 	SDL_Renderer* getRenderer();

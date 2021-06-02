@@ -41,54 +41,11 @@ UniqueTileLayer::UniqueTileLayer(const Vector2i& dimension)
 
 
 
-bool UniqueTileLayer::loadUniqueTileFromTemplate(const std::string& nameTemplate, const Vector2i& pos, TileSetHandler& tileSetHandler)
+bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler)
 {
-	std::vector<std::string> templateLines = getlines("data/levels/" + nameTemplate);
-	std::string& line = templateLines[0];
-
-	TemplateObject templateObject;
-	//Set name in base at name of template
-	templateObject.name = nameTemplate;
-
-	for (int i = 0; i < templateLines.size(); i++)
-	{
-		line = templateLines[i];
-
-		if (isInString(line, "<property"))
-		{
-			line = removeFrontSpace(line);
-			line = remove(line, "/");
-			line = remove(line, ">");
-
-			std::vector<std::string> propertyInfo = split(line, " ");
-
-			Property property;
-
-			for (int j = 0; j < propertyInfo.size(); j++)
-			{
-				std::string& info = propertyInfo[j];
-				if (isInString(info, "name="))
-				{
-					property.name = removeQuotationMarks(stride(info, "name="));
-				}
-				else if (isInString(info, "type="))
-				{
-					property.type = removeQuotationMarks(stride(info, "type="));
-				}
-				else if (isInString(info, "value="))
-				{
-					property.value = removeQuotationMarks(stride(info, "value="));
-				}
-			}
-
-			templateObject.properties.push_back(property);
-		}
-
-		
-	}
-
 	RealType realType;
 
+	//Search the properties that reppresent the type of UniqueTile
 	for (int i = 0; i < templateObject.properties.size(); i++)
 	{
 		if (templateObject.properties[i].name == "UniqueTileType")
@@ -96,13 +53,13 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const std::string& nameTemplate
 			realType = (RealType)std::stoi(templateObject.properties[i].value);
 		}
 	}
+	//Search the properties that reppresent the type of UniqueTile
 
+	//Decide in base to the type of UniqueTile what UniqueTile create
 	switch (realType)
 	{
 	case Destructble:
 		m_destructbleTiles.push_back(DestructbleTile(templateObject, tileSetHandler));
-		//Add pos, ricordati di andare a modificare quello che è il valore dividendolo per la dimensione del tile
-		//m_pos.push_back(pos);
 		m_indexMatrix[pos.y][pos.x] = m_destructbleTiles.size() - 1;
 		break;
 	case Chest:
@@ -112,6 +69,7 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const std::string& nameTemplate
 	default:
 		break;
 	}
+	//Decide in base to the type of UniqueTile what UniqueTile create
 
 	return true;
 }
@@ -128,21 +86,21 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const std::string& nameTemplate
 //------------------------------------------------------------------------------------
 void TileMap::addTileLayer(TileLayer& tileLayer)
 {
-	m_tileLayer.push_back(tileLayer);
+	m_tileLayers.push_back(tileLayer);
 }
 
 
 
 CommonTile& TileMap::getCommonTile(int x, int y, int layer)
 {
-	return m_tileLayer[layer].m_tiles[y][x];
+	return m_tileLayers[layer].m_tiles[y][x];
 }
 
 
 
 uint16_t TileMap::getMaxLayer()
 {
-	return m_tileLayer.size();
+	return m_tileLayers.size();
 }
 //------------------------------------------------------------------------------------
 //TileMap Class

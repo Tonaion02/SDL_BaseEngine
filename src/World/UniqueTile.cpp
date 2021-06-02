@@ -10,9 +10,11 @@ DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHa
 	std::string nameTileSet;
 	Vector2i tileDim = tileSetHandler.getTileDimension();
 
+	Property property;
+	//Load property from templateObject
 	for (int i = 0; i < templateObject.properties.size(); i++)
 	{
-		Property property = templateObject.properties[i];
+		property = templateObject.properties[i];
 
 		if (property.name == "destructed")
 		{
@@ -34,6 +36,7 @@ DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHa
 			}
 		}
 	}
+	//Load property from templateObject
 }
 
 
@@ -42,9 +45,11 @@ DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHa
 
 Image& DestructbleTile::getCurrentImage()
 {
+	//Decide in base to isDestroyed what image load
 	if (isDestroyed)
 	{
 		return images[0];
 	}
 	return images[1];
+	//Decide in base to isDestroyed what image load
 }

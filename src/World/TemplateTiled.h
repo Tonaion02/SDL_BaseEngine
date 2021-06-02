@@ -14,6 +14,7 @@ public:
 	Property(const std::string& name, const std::string& type, const std::string& value)
 		:name(name), type(type), value(value)
 	{}
+	Property(const std::string& propertyLine);
 
 	std::string type;
 	std::string name;
@@ -27,7 +28,22 @@ public:
 struct TemplateObject
 {
 public:
-
 	std::string name;
 	std::vector<Property> properties;
+};
+
+
+
+
+
+class CacheTemplateObjectHandler
+{
+public:
+	CacheTemplateObjectHandler() {}
+
+	bool loadTemplateObject(const std::string& nameTemplate);
+	TemplateObject getTemplateObject(const std::string& nameTemplate);
+
+public:
+	std::vector<TemplateObject> objects;
 };

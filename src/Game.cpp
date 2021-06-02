@@ -11,15 +11,18 @@
 //------------------------------------------------------------------------------------
 
 //AGGIUNGERE FILE DAL QUALE SI PESCANO OPZIONI DI GIOCO
+//AGGIUNGERE FILE DAL QUALE SI PESCANO PROGRESSI DI GIOCO(SAVESLOT)
 void Game::init()
 {
 	SDL_Init(SDL_INIT_EVENTS);
 
 	screenDimension = { 900, 720 };
-	SDL_Handler::get().init(screenDimension.x, screenDimension.y);
+	SDL_Handler::get().init(screenDimension);
 
 	m_isRunning = true;
 	m_isFirst = true;
+
+
 }
 
 
@@ -54,11 +57,7 @@ void Game::update()
 	{
 		m_isFirst = false;
 
-		image = Image("data/images/we.png");
-
 		level = Level("data/levels/level3.tmx");
-
-		SDL_Log(std::to_string(level.m_tileMaps[0].getCommonTile(3, 1, 0).realType).c_str());
 
 		pos = { 700.0f, 0.0f };
 	}
@@ -70,8 +69,12 @@ void Game::update()
 
 void Game::generateOutput()
 {
+	//Clear Screen
 	Game::get().clearColorScreen(Color(0, 255, 255, 255));
-	
+	//Clear Screen
+
+
+
 	//Rendering Level
 	Vector2i intPosPlayer = (Vector2i)pos;
 	Vector2i intTilePosPlayer = { intPosPlayer.x / level.getTileWidth(), intPosPlayer.y / level.getTileHeight() };
@@ -107,9 +110,6 @@ void Game::generateOutput()
 	//Controll value rendering
 
 	//Controll value
-	//Momentaneo
-	//backToRender.y = 0;
-	//frontToRender.y = screenDimension.y / level.getTileHeight();
 	if (backToRender.x < 0)
 	{
 		backToRender.x = 0;
@@ -121,17 +121,18 @@ void Game::generateOutput()
 		backToRender.y = 0;
 		frontToRender.y = screenDimension.y / level.getTileHeight();
 	}
-
-
-	Vector2i posImageLevel = { (level.getWidth() * level.getTileWidth()) - screenDimension.x, 0};
-	//Momentaneo
 	//Controll value
 
 	Vector2i renderAdj = { intPosPlayer.x - (intTilePosPlayer.x * level.getTileWidth()), intPosPlayer.y - (intTilePosPlayer.y * level.getTileHeight()) };
 
+	//Rendering Level
 	for (int i = 0; i < level.m_tileMaps.size(); i++)
 	{
+		//Rendering First TileLayer
 		level.m_graphicLayer[i][0].blit({ 0, 0 }, startRectRendering, screenDimension);
+		//Rendering First TileLayer
+
+
 
 		//Rendering UniqueTileLayer
 		for (int y = backToRender.y; y < frontToRender.y; y++)
@@ -141,25 +142,62 @@ void Game::generateOutput()
 			{
 				int rendX = (x * level.getTileWidth()) - startRectRendering.x;
 				//Momentaneo
-				//image.blit({ rendY, rendX });
+				//Verify if is unique a CommonTile
+				RealType realType = level.m_tileMaps[i].getCommonTile(x, y, 0).realType;
 				if (level.m_tileMaps[i].getCommonTile(x, y, 0).isUnique())
 				{
 					int index = level.m_tileMaps[i].m_uniqueTileLayer.m_indexMatrix[y][x];
-					level.m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].getCurrentImage().blit({ rendX, rendY });
+					//Select the type of UniqueTile
+					switch (realType)
+					{
+					case NoneTileRealType:
+						break;
+					case Void:
+						break;
+					case Graphic:
+						break;
+					case Ground:
+						break;
+					case Obstacle:
+						break;
+					case Sea:
+						break;
+					case Grass:
+						break;
+					case Destructble:
+						level.m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].getCurrentImage().blit({ rendX, rendY });
+						break;
+					case Chest:
+						break;
+					case Openable:
+						break;
+					default:
+						break;
+					}
+					//Select the type of UniqueTile
 				}
+				//Verify if is unique a CommonTile
 				//Momentaneo
 			}
 		}
 		//Rendering UniqueTileLayer
 
+
+
+		//Rendering Other TileLayer
 		for (int j = 1; j < level.m_graphicLayer[i].size(); j++)
 		{
 			level.m_graphicLayer[i][j].blit({ 0, 0 }, startRectRendering, screenDimension);
 		}
+		//Rendering Other TileLayer
 	}
 	//Rendering Level
 
+
+
+	//Render Image
 	SDL_RenderPresent(SDL_Handler::get().getRenderer());
+	//Render Image
 }
 
 

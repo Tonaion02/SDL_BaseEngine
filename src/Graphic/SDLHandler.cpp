@@ -7,10 +7,10 @@
 //------------------------------------------------------------------------------------
 //SDL_Handler Class
 //------------------------------------------------------------------------------------
-void SDL_Handler::init(int resolutionX, int resolutionY)
+void SDL_Handler::init(const Vector2i& dimension)
 {
 	SDL_Init(SDL_INIT_VIDEO);
-	m_window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resolutionX, resolutionY, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, dimension.x, dimension.y, SDL_WINDOW_SHOWN);
 	m_renderer = SDL_CreateRenderer(m_window, -1, 0);
 }
 

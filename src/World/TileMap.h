@@ -33,11 +33,9 @@ public:
 
 	//Aggiungere tutte le liste di UniqueTile
 
-	bool loadUniqueTileFromTemplate(const std::string& nameTemplate, const Vector2i& pos, TileSetHandler& tileSetHandler);
+	bool loadUniqueTileFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler);
 public:
-	//temporaneamente un std::vector
 	std::vector<DestructbleTile> m_destructbleTiles;
-	std::vector<Vector2i> m_pos;
 
 	std::vector<std::vector<uint16_t>> m_indexMatrix;
 
@@ -67,5 +65,5 @@ public:
 	UniqueTileLayer m_uniqueTileLayer;
 
 private:
-	std::vector<TileLayer> m_tileLayer;
+	std::vector<TileLayer> m_tileLayers;
 };

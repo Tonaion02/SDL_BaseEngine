@@ -16,16 +16,13 @@ Level::Level(const std::string& filePathTileMap)
 {
 	std::vector<std::string> TileMapLines = getlines(filePathTileMap);
 
-	//for (int i = 0; i < TileMapLines.size(); i++)
-	//{
-	//	SDL_Log(TileMapLines[i].c_str());
-	//}
-
 	std::string& line = TileMapLines[0];
 
 	std::vector<std::vector<uint16_t>> bufferTiles;
 
 	int currentNTileMap = -1;
+
+	CacheTemplateObjectHandler cacheUniqueTileTemplates;
 
 	//Excract info from File
 	for (int i = 0; i < TileMapLines.size(); i++)
@@ -149,12 +146,20 @@ Level::Level(const std::string& filePathTileMap)
 							line = TileMapLines[i];
 							if (isInString(line, "<object"))
 							{
+								bool modified = false;
 								line = removeFrontSpace(line);
-								//In base of presence of this "/" create two case, in the first the object is totaly equal to that in template, in other case is modified and search properties modified
+								//Controll if is a modified template searching "/"
+								if (!isInString(line, "/"))
+								{
+									modified = true;
+								}
+								//Controll if is a modified template searching "/"
+								
+								//Search info about template
 								line = remove(line, "/");
 								line = remove(line, ">");
-								
 								std::vector<std::string> infoAboutObject = split(line, " ");
+								
 								std::string filePathTemplate;
 								Vector2i posObject = { 0, 0 };
 
@@ -173,8 +178,45 @@ Level::Level(const std::string& filePathTileMap)
 										posObject.y = std::stoi(removeQuotationMarks(stride(info, "y="))) / m_tileHeight - 1;
 									}
 								}
+								//Search info about template
 
-								m_tileMaps[currentNTileMap].m_uniqueTileLayer.loadUniqueTileFromTemplate(filePathTemplate, posObject, m_tileSetHandler);
+								//Load template and save in cache
+								cacheUniqueTileTemplates.loadTemplateObject(filePathTemplate);
+								TemplateObject templateObject = cacheUniqueTileTemplates.getTemplateObject(filePathTemplate);
+								//Load template and save in cache
+
+								//If is the template is modified charge changes
+								if (modified)
+								{
+									while (!isInString(line, "</object"))
+									{
+										i++;
+										line = TileMapLines[i];
+										
+										
+										if (isInString(line, "<property"))
+										{
+											std::vector<std::string> infoAboutProperty = split(line, " ");
+
+											Property property = Property(line);
+											
+											for (int l = 0; l < templateObject.properties.size(); l++)
+											{
+												if (templateObject.properties[l].name == property.name)
+												{
+													templateObject.properties[l].value = property.value;
+												}
+											}
+										}
+
+			
+									}
+								}
+								//If is the template is modified charge changes
+
+								//Load template in m_tileMaps
+								m_tileMaps[currentNTileMap].m_uniqueTileLayer.loadUniqueTileFromTemplate(templateObject, posObject, m_tileSetHandler);
+								//Load template in m_tileMaps
 							}
 							i++;
 						}
