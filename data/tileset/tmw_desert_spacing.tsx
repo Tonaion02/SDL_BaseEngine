@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.6.0" name="level0" tilewidth="32" tileheight="32" tilecount="72" columns="12">
- <image source="buch-outdoor.png" width="384" height="192"/>
+<tileset version="1.5" tiledversion="1.6.0" name="tmw_desert_spacing" tilewidth="32" tileheight="32" tilecount="48" columns="8">
+ <image source="../images/tmw_desert_spacing.png" width="265" height="199"/>
  <tile id="0" type="1"/>
- <tile id="1" type="2"/>
- <tile id="2" type="7"/>
+ <tile id="1" type="1"/>
+ <tile id="2" type="1"/>
  <tile id="3" type="1"/>
  <tile id="4" type="1"/>
  <tile id="5" type="1"/>
@@ -49,28 +49,4 @@
  <tile id="45" type="1"/>
  <tile id="46" type="1"/>
  <tile id="47" type="1"/>
- <tile id="48" type="1"/>
- <tile id="49" type="1"/>
- <tile id="50" type="1"/>
- <tile id="51" type="1"/>
- <tile id="52" type="1"/>
- <tile id="53" type="1"/>
- <tile id="54" type="1"/>
- <tile id="55" type="1"/>
- <tile id="56" type="1"/>
- <tile id="57" type="1"/>
- <tile id="58" type="1"/>
- <tile id="59" type="1"/>
- <tile id="60" type="1"/>
- <tile id="61" type="1"/>
- <tile id="62" type="1"/>
- <tile id="63" type="1"/>
- <tile id="64" type="1"/>
- <tile id="65" type="1"/>
- <tile id="66" type="1"/>
- <tile id="67" type="1"/>
- <tile id="68" type="1"/>
- <tile id="69" type="1"/>
- <tile id="70" type="1"/>
- <tile id="71" type="1"/>
 </tileset>

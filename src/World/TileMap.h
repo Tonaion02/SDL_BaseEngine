@@ -19,6 +19,7 @@ public:
 	TileLayer(uint16_t width, uint16_t height);
 
 	std::vector<std::vector<CommonTile>> m_tiles;
+	uint16_t m_width, m_height;
 };
 
 
@@ -32,10 +33,12 @@ public:
 	UniqueTileLayer(const Vector2i& dimension);
 
 	//Aggiungere tutte le liste di UniqueTile
-
 	bool loadUniqueTileFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler);
+
 public:
 	std::vector<DestructbleTile> m_destructbleTiles;
+	//std::vector<ChestTile> m_chestTiles;
+	//std::vector<OpenableTile> m_openableTiles;
 
 	std::vector<std::vector<uint16_t>> m_indexMatrix;
 
@@ -59,7 +62,11 @@ public:
 	//Get Common Tile of a specific layer with x and y
 	CommonTile& getCommonTile(int x, int y, int layer);
 
-	uint16_t getMaxLayer();
+	uint16_t getMaxLayer() const;
+	uint16_t getMaxWidth() const;
+	uint16_t getMaxHeight() const;
+
+	void reactTile(const Vector2i pos, int layer);
 
 public:
 	UniqueTileLayer m_uniqueTileLayer;

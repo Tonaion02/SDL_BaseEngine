@@ -1,11 +1,21 @@
 #pragma once
 
+#include "General/Options.h"
+
+#include "Input/Input.h"
+
 #include "Graphic/Image.h"
 
+#include "World/World.h"
 #include "World/Level.h"
 
-#include "TileSet.h"
+#include "Entity/EntityLayer.h"
 
+#include "StatusHandler.h"
+
+#include "Camera/Camera.h"
+
+#include "Time/Delay.h"
 
 
 
@@ -13,6 +23,37 @@
 class Game
 {
 public:
+	struct GamePhase
+	{
+		enum Phase
+		{
+			NonePhase = -1,
+			Exploring,
+			Battle,
+			Dialoging
+		};
+
+		enum StatusGamePhase
+		{
+			NoneStatusGamePhase=-1,
+			On,
+			Pause,
+			Off
+		};
+
+	public:
+		GamePhase() :status(StatusGamePhase::Off){}
+		GamePhase(Phase phase): phase(phase) {}
+
+		bool operator==(GamePhase other)
+		{
+			return phase == other.phase;
+		}
+
+		StatusGamePhase status;
+		Phase phase;
+	};
+
 	static Game& get()
 	{
 		static Game game;
@@ -35,6 +76,10 @@ protected:
 
 	//Secondary Method
 	void clearColorScreen(const Color& clearColor);
+	void renderGraphics();
+	void updateDeltaTime();
+	void sleep();
+	void first();
 	//Secondary Method
 
 protected:
@@ -42,15 +87,18 @@ protected:
 
 	bool m_isFirst;
 
+	double s_deltaTime;
+	uint32_t s_ticksCount;
+
 	Vector2i screenDimension;
+	Level currentLevel;
 
+	StatusHandler<GamePhase> statusHandler;
 
+	TileSetHandler entityTileSetHandler;
 protected:
 
-	Level level;
-
-	Vector2f pos;
-
+	Entity entity;
 };
 
 //Rinominare tutti i getInstance() dei singleton come get()

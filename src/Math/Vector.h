@@ -5,11 +5,13 @@
 
 
 
+class Vector2i;
 
 class Vector2f
 {
 public:
 	Vector2f(float x = 0, float y = 0) :x(x), y(y) {}
+	Vector2f(const Vector2i& other);
 
 	Vector2f operator+(const Vector2f& other)
 	{

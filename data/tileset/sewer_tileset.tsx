@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.5" tiledversion="1.6.0" name="sewer_tileset" tilewidth="32" tileheight="32" tilecount="36" columns="6">
- <image source="sewer_tileset.png" width="192" height="217"/>
+ <image source="../images/sewer_tileset.png" width="192" height="217"/>
  <tile id="0" type="1"/>
  <tile id="1" type="1"/>
  <tile id="2" type="1"/>

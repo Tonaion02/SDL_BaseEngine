@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<options>
+  <window width="900" height="720"/>
+  <filepath name="base" value="data/"/>
+  <filepath name="levels" value="data/levels/"/>
+  <filepath name="images" value="data/images/"/>
+  <filepath name="saves" value="data/saves/"/>
+  <filepath name="entity" value="data/entity/"/>
+  <vsync name="vsync" value="true"/>
+</options>

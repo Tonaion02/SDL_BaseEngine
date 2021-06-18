@@ -8,13 +8,14 @@
 //TileLayer Class
 //------------------------------------------------------------------------------------
 TileLayer::TileLayer(uint16_t width, uint16_t height)
+	:m_width(width), m_height(height)
 {
 	for (int i = 0; i < height; i++)
 	{
 		m_tiles.push_back(std::vector<CommonTile>(width));
 		for (int j = 0; j < width; j++)
 		{
-			m_tiles[i][j] = CommonTile(0, 0);
+			m_tiles[i][j] = CommonTile(1, 0);
 		}
 	}
 }
@@ -91,16 +92,42 @@ void TileMap::addTileLayer(TileLayer& tileLayer)
 
 
 
+
+void TileMap::reactTile(const Vector2i pos, int layer)
+{
+	if (m_tileLayers[layer].m_tiles[pos.y][pos.x].isUnique())
+	{
+
+	}
+}
+
+
+
 CommonTile& TileMap::getCommonTile(int x, int y, int layer)
 {
+	CommonTile tile = m_tileLayers[layer].m_tiles[y][x];
 	return m_tileLayers[layer].m_tiles[y][x];
 }
 
 
 
-uint16_t TileMap::getMaxLayer()
+uint16_t TileMap::getMaxLayer() const
 {
 	return m_tileLayers.size();
+}
+
+
+
+uint16_t TileMap::getMaxWidth() const
+{
+	return m_tileLayers[0].m_width;
+}
+
+
+
+uint16_t TileMap::getMaxHeight() const
+{
+	return m_tileLayers[0].m_height;
 }
 //------------------------------------------------------------------------------------
 //TileMap Class

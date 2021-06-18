@@ -34,13 +34,18 @@ public:
 
 	std::string getPath();
 	SDL_Texture* getRawTexture();
+
+	uint16_t getId();
+
 private:
 	uint32_t m_w, m_h;
 
 	std::string m_path;
 	SDL_Texture* m_rawTexture;
 
-	static int32_t s_counter;
+	uint16_t m_id;
+
+	static uint16_t s_counterId;
 };
 
 
@@ -58,13 +63,15 @@ public:
 
 	int loadTexture(const std::string& path);
 	int loadTexture(SDL_Surface* surface);
+	int getTextureIndex(uint16_t id);
+
 	Texture getTexture(int index);
 
 protected:
 	TextureHandler() {}
 
 private:
-	std::vector<Texture> m_textures;
+	std::vector<Texture> s_textures;
 };
 
 

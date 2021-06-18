@@ -6,6 +6,9 @@
 //------------------------------------------------------------------------------------
 //Texture Class
 //------------------------------------------------------------------------------------
+uint16_t Texture::s_counterId = 0;
+
+
 Texture::Texture(const std::string& path)
 {
 	SDL_Surface* temp = IMG_Load(path.c_str());
@@ -15,6 +18,9 @@ Texture::Texture(const std::string& path)
 
 	m_rawTexture = SDL_CreateTextureFromSurface(SDL_Handler::get().getRenderer(), temp);
 	SDL_FreeSurface(temp);
+
+	m_id = s_counterId;
+	s_counterId++;
 }
 
 
@@ -22,7 +28,8 @@ Texture::Texture(const std::string& path)
 Texture::Texture(SDL_Surface* surface)
 	:m_w(surface->w), m_h(surface->h), m_path(""), m_rawTexture(SDL_CreateTextureFromSurface(SDL_Handler::get().getRenderer(), surface))
 {
-
+	m_id = s_counterId;
+	s_counterId++;
 }
 
 
@@ -52,6 +59,13 @@ SDL_Texture* Texture::getRawTexture()
 {
 	return m_rawTexture;
 }
+
+
+
+uint16_t Texture::getId()
+{
+	return m_id;
+}
 //------------------------------------------------------------------------------------
 //Texture Class
 //------------------------------------------------------------------------------------
@@ -67,31 +81,47 @@ int TextureHandler::loadTexture(const std::string& path)
 {
 	//Aggiungere assert path != ""
 
-	for (int i = 0; i < m_textures.size(); i++)
+	for (int i = 0; i < s_textures.size(); i++)
 	{
-		if (m_textures[i].getPath() == path)
+		if (s_textures[i].getPath() == path)
 		{
 			return i;
 		}
 	}
 
-	m_textures.emplace_back(Texture(path));
-	return m_textures.size() - 1;
+	s_textures.emplace_back(Texture(path));
+	return s_textures.size() - 1;
+}
+
+
+
+int TextureHandler::getTextureIndex(uint16_t id)
+{
+	for (int i = 0; i < s_textures.size(); i++)
+	{
+		if (s_textures[i].getId() == id)
+		{
+			return i;
+		}
+	}
+
+	//Aggiungere assert
+	return -1;
 }
 
 
 
 int TextureHandler::loadTexture(SDL_Surface* surface)
 {
-	m_textures.emplace_back(Texture(surface));
-	return m_textures.size() - 1;
+	s_textures.emplace_back(Texture(surface));
+	return s_textures.size() - 1;
 }
 
 
 
 Texture TextureHandler::getTexture(int index)
 {
-	return m_textures[index];
+	return s_textures[index];
 }
 //------------------------------------------------------------------------------------
 //TextureLoader Class

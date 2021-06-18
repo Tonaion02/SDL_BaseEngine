@@ -2,6 +2,7 @@
 
 #include "TileMap.h"
 #include "TileSet.h"
+#include "Entity/EntityLayer.h"
 
 #include "Graphic/Image.h"
 
@@ -24,16 +25,17 @@ public:
 	std::vector<std::vector<Image>> m_graphicLayer;
 	
 	std::vector<TileMap> m_tileMaps;
+	std::vector<EntityLayer> m_entityLayers;
+
+	//FORSE VA RESO PRIVATO
+	TileSetHandler m_tileSetHandler;
+
 private:
-	
-	
 	uint16_t m_width, m_height, m_maxZ;
 	uint16_t m_tileWidth, m_tileHeight;
 	std::string m_filePathTileMap;
 	std::string m_filePathTileSet;
 
-	//FORSE VA RESO PUBBLICO
-	TileSetHandler m_tileSetHandler;
 };
 //Aggiungere le funzioni render layerTileMap e render objecLayerTileMap
 

@@ -8,5 +8,6 @@
    <property name="images" value="4,5"/>
    <property name="tileset" value="level0.tsx"/>
   </properties>
+   <dialog name="wewe" value="we"/>
  </object>
 </template>

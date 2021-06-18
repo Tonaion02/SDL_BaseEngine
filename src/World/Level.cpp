@@ -78,16 +78,19 @@ Level::Level(const std::string& filePathTileMap)
 				{
 					//Search filePath of TileSet
 					line = removeFrontSpace(line);
-					line = remove(line, "/");
 					line = remove(line, ">");
+					//to remove only the last "/"
+					line = stride(line, 0, line.size() - 1);
+					//to remove only the last "/"
 					std::vector<std::string> infoAboutTileSet = split(line, " ");
 					std::string filePathTileSet;
 					int firstVisualType;
 					for (auto info : infoAboutTileSet)
 					{
 						if (isInString(info, "source="))
-						{
-							filePathTileSet = removeQuotationMarks(stride(line, "source="));
+						{ 
+							info = removeQuotationMarks(stride(info, "source="));
+							filePathTileSet = stride(info, "../tileset/");
 						}
 						else if (isInString(info, "firstgid="))
 						{
@@ -99,7 +102,7 @@ Level::Level(const std::string& filePathTileMap)
 
 
 					//Load a TileSet
-					TileSet tileSet = TileSet("data/levels/" + filePathTileSet, firstVisualType, true);
+					TileSet tileSet = TileSet("data/tileset/" + filePathTileSet, firstVisualType, true);
 					m_tileSetHandler.addTileSet(tileSet);
 					//Load a TileSet
 				}
@@ -111,117 +114,122 @@ Level::Level(const std::string& filePathTileMap)
 				else if (isInString(line, "<objectgroup"))
 				{
 					line = removeFrontSpace(line);
-					line = remove(line, ">");
-					std::vector<std::string> infoAboutObjectgroup = split(line, " ");
-					int choice=-1;
-
-					//Excract info from intestation of ObjectGroup
-					for (auto info : infoAboutObjectgroup)
+					if (!isInString(line, "/>"))
 					{
-						if (isInString(info, "name="))
+						line = remove(line, ">");
+						std::vector<std::string> infoAboutObjectgroup = split(line, " ");
+						int choice = -1;
+
+						//Excract info from intestation of ObjectGroup
+						for (auto info : infoAboutObjectgroup)
 						{
-							info = removeQuotationMarks(stride(info, "name="));
-							//Controll if is a UniqueTileLayer
-							if (info == "UniqueTile")
+							if (isInString(info, "name="))
 							{
-								choice = 0;
+								info = removeQuotationMarks(stride(info, "name="));
+								//Controll if is a UniqueTileLayer
+								if (info == "UniqueTile")
+								{
+									choice = 0;
+								}
+								//Controll if is a UniqueTileLayer
+
 							}
-							//Controll if is a UniqueTileLayer
-
 						}
-					}
-					//Excract info from intestation of ObjectGroup
+						//Excract info from intestation of ObjectGroup
 
-					
 
-					//Decide if you create a UniqueTileLayer or EnemyLayer or other
-					i++;
-					line = TileMapLines[i];
-					if (choice == 0)
-					{
-						m_tileMaps[currentNTileMap].m_uniqueTileLayer = UniqueTileLayer({ m_width, m_height });
-						
-						while (!isInString(TileMapLines[i], "</objectgroup"))
+
+						//Decide if you create a UniqueTileLayer or EnemyLayer or other
+						i++;
+						line = TileMapLines[i];
+						if (choice == 0)
 						{
-							line = TileMapLines[i];
-							if (isInString(line, "<object"))
+							m_tileMaps[currentNTileMap].m_uniqueTileLayer = UniqueTileLayer({ m_width, m_height });
+
+							while (!isInString(TileMapLines[i], "</objectgroup"))
 							{
-								bool modified = false;
-								line = removeFrontSpace(line);
-								//Controll if is a modified template searching "/"
-								if (!isInString(line, "/"))
+								line = TileMapLines[i];
+								if (isInString(line, "<object"))
 								{
-									modified = true;
-								}
-								//Controll if is a modified template searching "/"
-								
-								//Search info about template
-								line = remove(line, "/");
-								line = remove(line, ">");
-								std::vector<std::string> infoAboutObject = split(line, " ");
-								
-								std::string filePathTemplate;
-								Vector2i posObject = { 0, 0 };
-
-								for (auto info : infoAboutObject)
-								{
-									if (isInString(info, "template="))
+									bool modified = false;
+									line = removeFrontSpace(line);
+									//Controll if is a modified template searching "/"
+									if (!isInString(line, "/"))
 									{
-										filePathTemplate = removeQuotationMarks(stride(info, "template="));
+										modified = true;
 									}
-									else if (isInString(info, "x="))
-									{
-										posObject.x = std::stoi(removeQuotationMarks(stride(info, "x="))) / m_tileWidth;
-									}
-									else if (isInString(info, "y="))
-									{
-										posObject.y = std::stoi(removeQuotationMarks(stride(info, "y="))) / m_tileHeight - 1;
-									}
-								}
-								//Search info about template
+									//Controll if is a modified template searching "/"
 
-								//Load template and save in cache
-								cacheUniqueTileTemplates.loadTemplateObject(filePathTemplate);
-								TemplateObject templateObject = cacheUniqueTileTemplates.getTemplateObject(filePathTemplate);
-								//Load template and save in cache
+									//Search info about template
+									line = remove(line, "/");
+									line = remove(line, ">");
+									std::vector<std::string> infoAboutObject = split(line, " ");
 
-								//If is the template is modified charge changes
-								if (modified)
-								{
-									while (!isInString(line, "</object"))
+									std::string filePathTemplate;
+									Vector2i posObject = { 0, 0 };
+
+									for (auto info : infoAboutObject)
 									{
-										i++;
-										line = TileMapLines[i];
-										
-										
-										if (isInString(line, "<property"))
+										if (isInString(info, "template="))
 										{
-											std::vector<std::string> infoAboutProperty = split(line, " ");
+											filePathTemplate = removeQuotationMarks(stride(info, "template="));
+										}
+										else if (isInString(info, "x="))
+										{
+											posObject.x = std::stoi(removeQuotationMarks(stride(info, "x="))) / m_tileWidth;
+										}
+										else if (isInString(info, "y="))
+										{
+											posObject.y = std::stoi(removeQuotationMarks(stride(info, "y="))) / m_tileHeight - 1;
+										}
+									}
+									//Search info about template
 
-											Property property = Property(line);
-											
-											for (int l = 0; l < templateObject.properties.size(); l++)
+									//Load template and save in cache
+									cacheUniqueTileTemplates.loadTemplateObject(filePathTemplate);
+									TemplateObject templateObject = cacheUniqueTileTemplates.getTemplateObject(filePathTemplate);
+									//Load template and save in cache
+
+									//If is the template is modified charge changes
+									if (modified)
+									{
+										while (!isInString(line, "</object"))
+										{
+											i++;
+											line = TileMapLines[i];
+
+
+											if (isInString(line, "<property"))
 											{
-												if (templateObject.properties[l].name == property.name)
+												std::vector<std::string> infoAboutProperty = split(line, " ");
+
+												Property property = Property(line);
+
+												for (int l = 0; l < templateObject.properties.size(); l++)
 												{
-													templateObject.properties[l].value = property.value;
+													if (templateObject.properties[l].name == property.name)
+													{
+														templateObject.properties[l].value = property.value;
+													}
 												}
 											}
+
+
 										}
-
-			
 									}
-								}
-								//If is the template is modified charge changes
+									//If is the template is modified charge changes
 
-								//Load template in m_tileMaps
-								m_tileMaps[currentNTileMap].m_uniqueTileLayer.loadUniqueTileFromTemplate(templateObject, posObject, m_tileSetHandler);
-								//Load template in m_tileMaps
+									//Load template in m_tileMaps
+									m_tileMaps[currentNTileMap].m_uniqueTileLayer.loadUniqueTileFromTemplate(templateObject, posObject, m_tileSetHandler);
+									//Load template in m_tileMaps
+								}
+								i++;
 							}
-							i++;
 						}
+						//Decide if you create a UniqueTileLayer or EnemyLayer or other
 					}
-					//Decide if you create a UniqueTileLayer or EnemyLayer or other
+
+
 				}
 				//Search a objectgroup(Object Layer)
 
@@ -299,7 +307,7 @@ Level::Level(const std::string& filePathTileMap)
 				for (int x = 0; x < m_width; x++)
 				{
 					RealType realType = m_tileMaps[i].getCommonTile(x, y, layer).realType;
-					if (realType > 0)
+					if (realType > 1)
 					{
 						uint16_t visualType = m_tileMaps[i].getCommonTile(x, y, layer).visualType;
 						m_tileSetHandler.blitSurfaceTile(visualType, { x * m_tileWidth, y * m_tileHeight }, temp);
@@ -317,6 +325,14 @@ Level::Level(const std::string& filePathTileMap)
 
 	}
 	//Construct Static Graphic Layer
+
+
+
+	//Set some value
+	m_maxZ = currentNTileMap;
+	//da sostituire con lo specifico push_back() di un inizializzato EntityLayer
+	m_entityLayers = std::vector<EntityLayer>(m_maxZ);
+	//Set some value
 
 
 

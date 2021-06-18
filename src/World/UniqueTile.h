@@ -27,11 +27,12 @@ struct DestructbleTile : public UniqueTile
 	DestructbleTile() :UniqueTile() {}
 	DestructbleTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler);
 
-	Image& getCurrentImage();
+	uint16_t getCurrentImage();
 
 	bool isDestroyed;
 
-	Image images[2];
+	std::array<uint16_t, 2> idImages;
+	std::string nameTileset;
 };
 
 

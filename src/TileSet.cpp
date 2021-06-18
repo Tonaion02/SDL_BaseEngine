@@ -64,7 +64,7 @@ TileSet::TileSet(const std::string& filePath, uint16_t firstVisualType, bool wit
 		else if (isInString(line, "<image"))
 		{
 			line = removeFrontSpace(line);
-			line = remove(line, "/");
+			line = stride(line, 0, line.size() - 1);
 			line = remove(line, ">");
 			std::vector<std::string> infoImage = split(line, " ");
 			for (auto info : infoImage)
@@ -72,10 +72,14 @@ TileSet::TileSet(const std::string& filePath, uint16_t firstVisualType, bool wit
 				if (isInString(info, "source="))
 				{
 					info = removeQuotationMarks(stride(info, "source="));
-					m_image = Image("data/levels/" + info);
+					
+					//da migliorare
+					info = stride(info, "../images/");
+
+					m_image = Image("data/images/" + info);
 					if (withSurface)
 					{
-						m_surface = Surface("data/levels/" + info);
+						m_surface = Surface("data/images/" + info);
 					}
 				}
 			}
@@ -136,6 +140,7 @@ void TileSet::blitImageTile(uint16_t visualType, const Vector2i& pos)
 {
 	Vector2i posTileSetImage = {0, visualType / m_columns};
 	posTileSetImage.x = visualType - (posTileSetImage.y * m_columns);
+	posTileSetImage = { posTileSetImage.x * m_tileDimension.x, posTileSetImage.y * m_tileDimension.y };
 	m_image.blit(pos, posTileSetImage, m_tileDimension);
 }
 
@@ -260,7 +265,7 @@ void TileSetHandler::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, S
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
 	{
-		if (visualType <= m_tileSets[i].getFirstVisualType())
+		if (visualType < m_tileSets[i].getFirstVisualType())
 		{
 			break;
 		}
@@ -280,12 +285,13 @@ CommonTile& TileSetHandler::getTile(int index)
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
 	{
-		if (index <= m_tileSets[i].getFirstVisualType())
+		if (index < m_tileSets[i].getFirstVisualType())
 		{
 			break;
 		}
 		j = i;
 	}
+
 
 	return m_tileSets[j].getTile(index - m_tileSets[j].getFirstVisualType());
 }

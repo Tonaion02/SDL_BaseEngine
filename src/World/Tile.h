@@ -43,8 +43,10 @@ struct CommonTile
 		{
 		case NoneTileRealType:
 		case Void:
+		case Graphic:
 		case Obstacle:
 		case Sea:
+		case Ground:
 			return false;
 
 		case Destructble:
@@ -58,13 +60,15 @@ struct CommonTile
 	{
 		switch (realType)
 		{
+		case Void:
+		case Graphic:
 		case Obstacle:
 		case Sea:
 		case Chest:
 			return false;
 
-		case Void:
 		case Grass:
+		case Ground:
 			return true;
 		}
 	}
@@ -73,15 +77,10 @@ struct CommonTile
 	{
 		switch (realType)
 		{
-		case NoneTileRealType:
-		case Void:
-		case Obstacle:
-		case Chest:
-			return false;
-
 		case Sea:
-		case Grass:
 			return true;
+		default:
+			return false;
 		}
 	}
 };

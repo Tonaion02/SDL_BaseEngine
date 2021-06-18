@@ -7,7 +7,6 @@
 DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler)
 	:UniqueTile()
 {
-	std::string nameTileSet;
 	Vector2i tileDim = tileSetHandler.getTileDimension();
 
 	Property property;
@@ -22,17 +21,15 @@ DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHa
 		}
 		else if (property.name == "tileset")
 		{
-			nameTileSet = property.value;
+			nameTileset = property.value;
 		}
 		else if (property.name == "images")
 		{
 			std::vector<std::string> infoAboutImages = split(property.value, ",");
+			
 			for (int j = 0; j < infoAboutImages.size(); j++)
 			{
-				Surface temp = Surface(Color(0, 0, 0, 0), tileDim.x, tileDim.y);
-				tileSetHandler.blitSurfaceTile((uint16_t)std::stoi(infoAboutImages[j]), nameTileSet, { 0, 0 }, temp);
-				images[j] = Image(temp.getRawSurface());
-				temp.free();
+				idImages[j] = (uint16_t)std::stoi(infoAboutImages[j]);
 			}
 		}
 	}
@@ -43,13 +40,13 @@ DestructbleTile::DestructbleTile(const TemplateObject& templateObject, TileSetHa
 
 
 
-Image& DestructbleTile::getCurrentImage()
+uint16_t DestructbleTile::getCurrentImage()
 {
 	//Decide in base to isDestroyed what image load
 	if (isDestroyed)
 	{
-		return images[0];
+		return idImages[0];
 	}
-	return images[1];
+	return idImages[1];
 	//Decide in base to isDestroyed what image load
 }
