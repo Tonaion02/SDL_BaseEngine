@@ -26,8 +26,6 @@ enum TypeEntity
 
 
 
-
-
 struct idEntity
 {
 	idEntity() {}
@@ -85,18 +83,24 @@ public:
 	Entity() 
 		:lastDirection(Direction::Down), currentDirection(Direction::NoneDirection), 
 		typeTerrain(TypeTerrain::Solid), statusMovement(StatusMovement::Lock), 
-		delayChangeDirection(Delay(0.2f)), nTile({2, 1}), nameTileSet("player.tsx")
+		delayChangeDirection(Delay(0.2f)), nTile({1, 2}), nameTileSet("playerTileSet16.tsx")
 	{}
 
-	virtual void move();
-	virtual void startMove(Direction direction);
-	void updateDirection(Direction direction);
-	virtual bool controllMove(Direction direction, TileMap& tileMap, std::vector<std::vector<idEntity>> idEntities);
-	virtual void update(float deltaTime, TileMap& tileMap);
+	virtual void move(Direction direction, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void startMove(Direction direction, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void updateDirection(Direction direction);
+	virtual bool controllMove(Direction direction, TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual bool controllPosition(const Vector2i& t, TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual void update(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual uint16_t getIdImage();
 	virtual void updateVelocity(Velocity velocity);
 	virtual void updateSurface(TypeTerrain typeTerrain);
-	virtual void render(const Vector2i pos, const TileSetHandler& tileSetHandler);
+	virtual void render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler);
+
+public:
+	static bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities);
+	static int getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
+	static idEntity getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
 
 public:
 	std::string name;
@@ -121,10 +125,10 @@ public:
 	std::vector<std::vector<std::vector<DinamicAnimation>>> animations; 
 	std::vector<uint16_t> idStaticImage;
 
-
 	Delay delayChangeDirection;
 	//vector di animation
 
+	bool rotateHitboxWithDirection=false;
 };
 
 
@@ -134,6 +138,11 @@ public:
 struct Npc : public Entity
 {
 public:
+	Npc() :Entity() {}
+	Npc(const std::string& filePath);
+
+public:
+
 };
 
 
@@ -143,4 +152,10 @@ public:
 struct Enemy : public Entity
 {
 public:
+	Enemy() :Entity() {}
+	Enemy(const std::string& filePath);
+
+	virtual bool detectPlayer(const std::vector<std::vector<idEntity>>& idEntities) const;
+public:
+	uint16_t viewLenght = 0;
 };

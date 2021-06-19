@@ -23,10 +23,12 @@ public:
 
 	void updatePos(const Vector2i pos);
 
-	Vector2i getPlayerPos(const Vector2i startRendering) const;
+	Vector2i getPlayerPos() const;
 	Vector2i getStartRectRendering() const;
 	Vector2i getFrontToRender() const;
 	Vector2i getBackToRender() const;
+
+	Vector2i getPosInProspective(const Vector2i& pos) const;
 
 protected:
 	Camera() :s_tileDimension({ 32, 32 }) {}

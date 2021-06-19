@@ -12,6 +12,10 @@ XMLvariab::XMLvariab(const std::string& line)
 	std::string newline = removeFrontSpace(line);
 	std::vector<std::string> infoAboutLine = split(newline, " ");
 	
+	//Take name from element
+	name = remove(infoAboutLine[0], "<");
+	//Take name from element
+
 	//Eliminate "<nameElement" from infoAboutLine
 	infoAboutLine.erase(infoAboutLine.begin());
 	//Eliminate "<nameElement" from infoAboutLine

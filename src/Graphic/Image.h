@@ -90,8 +90,8 @@ public:
 	uint32_t getH();
 	uint32_t getIndexTexture();
 
-	void blit(const Vector2i& pos);
-	void blit(const Vector2i& pos, const Vector2i& startRect, const Vector2i& dimRect);
+	void blit(const Vector2i& pos) const;
+	void blit(const Vector2i& pos, const Vector2i& startRect, const Vector2i& dimRect) const;
 
 	void setBlendMode(SDL_BlendMode blendMode);
 	void setAlpha(uint32_t alpha);
@@ -119,8 +119,8 @@ public:
 	uint32_t getH();
 	SDL_Surface* getRawSurface();
 
-	void blit(const Vector2i& pos, Surface& other);
-	void blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& endPos, Surface& other);
+	void blit(const Vector2i& pos, Surface& other) const;
+	void blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& endPos, Surface& other) const;
 
 	void setBlendMode(SDL_BlendMode blendMode);
 	void setAlpha(uint32_t alpha);

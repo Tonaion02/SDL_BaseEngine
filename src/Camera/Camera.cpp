@@ -118,9 +118,9 @@ void Camera::updatePos(const Vector2i pos)
 
 
 
-Vector2i Camera::getPlayerPos(const Vector2i startRendering) const
+Vector2i Camera::getPlayerPos() const
 {
-	return {s_pos.x - (s_tileDimension.x/2) - startRendering.x + s_renderAdj.x, s_pos.y - (s_tileDimension.y/2) - startRendering.y + s_renderAdj.y };
+	return {s_pos.x - (s_tileDimension.x/2) - s_startRectRendering.x + s_renderAdj.x, s_pos.y - (s_tileDimension.y/2) - s_startRectRendering.y + s_renderAdj.y };
 }
 
 
@@ -142,6 +142,13 @@ Vector2i Camera::getFrontToRender() const
 Vector2i Camera::getBackToRender() const
 {
 	return s_backToRender;
+}
+
+
+
+Vector2i Camera::getPosInProspective(const Vector2i& pos) const
+{
+	return { pos.x - s_startRectRendering.x + s_renderAdj.x, pos.y - s_startRectRendering.y + s_renderAdj.y };
 }
 //------------------------------------------------------------------------------------
 //Camera Class

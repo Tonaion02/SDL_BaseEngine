@@ -19,18 +19,19 @@ public:
 	Image getImage();
 	Surface getSurface();
 
-	void blitImageTile(uint16_t visualType, const Vector2i& pos);
-	void blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other);
+	void blitImageTile(uint16_t visualType, const Vector2i& pos) const;
+	void blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other) const;
 
-	bool isWithSurface();
+	bool isWithSurface() const;
 
-	uint16_t getFirstVisualType();
+	uint16_t getFirstVisualType() const;
 
-	std::string getFilePath();
+	std::string getFilePath() const;
 
 	CommonTile& getTile(int index);
 
-	const Vector2i getTileDimension();
+	const Vector2i getTileDimension() const;
+	uint16_t getColumns() const;
 
 private:
 	uint16_t m_columns;
@@ -64,12 +65,14 @@ public:
 	CommonTile& getTile(int index);
 	CommonTile& getTile(int index, const std::string& nameTileSet);
 
-	void blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos);
-	void blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other);
-	void blitImageTile(uint16_t visualType, const Vector2i& pos);
-	void blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other);
+	void blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos) const;
+	void blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other) const;
+	void blitImageTile(uint16_t visualType, const Vector2i& pos) const;
+	void blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other) const;
 
 	const Vector2i getTileDimension();
+	
+	const TileSet& getTileSet(const std::string& nameTileSet) const;
 private:
 	std::vector<TileSet> m_tileSets;
 };

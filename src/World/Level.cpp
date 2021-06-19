@@ -241,6 +241,7 @@ Level::Level(const std::string& filePathTileMap)
 				{
 					currentNTileMap++;
 					m_tileMaps.push_back(TileMap());
+					m_entityLayers.push_back(EntityLayer(m_width, m_height));
 				}
 				//Search a new group and add a new TileMap
 
@@ -331,7 +332,7 @@ Level::Level(const std::string& filePathTileMap)
 	//Set some value
 	m_maxZ = currentNTileMap;
 	//da sostituire con lo specifico push_back() di un inizializzato EntityLayer
-	m_entityLayers = std::vector<EntityLayer>(m_maxZ);
+	//m_entityLayers = std::vector<EntityLayer>(m_maxZ);
 	//Set some value
 
 

@@ -79,6 +79,7 @@ void Game::first()
 		World::get().loadLevel("data/levels/Level5.tmx");
 		currentLevel = World::get().getLevel(World::get().getIndexLevel("data/levels/Level5.tmx"));
 
+		entity.rotateHitboxWithDirection = false;
 		entity.pos = Vector2i( 1.0f, 0.0f );
 		entity.posImage = { entity.pos.x * currentLevel.getTileWidth(), entity.pos.y * currentLevel.getTileHeight() };
 		entity.z = 0;
@@ -103,22 +104,53 @@ void Game::first()
 			}
 		}
 
-		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "player.tsx", 0.2f, entity.pos, 0.2f, { 0, -currentLevel.getTileHeight() }));
-		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "player.tsx", 0.2f, entity.pos, 0.2f, { 0, currentLevel.getTileHeight() }));
-		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "player.tsx", 0.2f, entity.pos, 0.2f, { currentLevel.getTileWidth(), 0 }));
-		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "player.tsx", 0.2f, entity.pos, 0.2f, { -currentLevel.getTileWidth(), 0 }));
+		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, entity.pos, 0.2f, { 0, -currentLevel.getTileHeight() }));
+		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, entity.pos, 0.2f, { 0, currentLevel.getTileHeight() }));
+		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, entity.pos, 0.2f, { currentLevel.getTileWidth(), 0 }));
+		entity.animations[0][0].push_back(DinamicAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, entity.pos, 0.2f, { -currentLevel.getTileWidth(), 0 }));
 
 		entity.idStaticImage.push_back(0);
 		entity.idStaticImage.push_back(0);
 		entity.idStaticImage.push_back(0);
 		entity.idStaticImage.push_back(0);
+
+		currentLevel.m_entityLayers[entity.z].addPlayer(entity.pos, entity.nTile);
 
 		s_ticksCount = 0;
 
 		//Init Camera
-
 		Camera::get().init({ currentLevel.getTileWidth(), currentLevel.getTileHeight() }, { currentLevel.getWidth(), currentLevel.getHeight() });
 		//Init Camera
+
+
+
+		//Init Test Npc
+		Npc testNpc = Npc();
+		testNpc.pos = { 3, 3 };
+		testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		testNpc.nTile = { 2, 2 };
+		testNpc.animations = entity.animations;
+		testNpc.idStaticImage = entity.idStaticImage;
+		testNpc.nameTileSet = entity.nameTileSet;
+		testNpc.tileDimension = entity.tileDimension;
+		currentLevel.m_entityLayers[entity.z].add(testNpc);
+		//Init Test Npc
+
+
+
+		//Init Test Enemy
+		Enemy testEnemy = Enemy();
+		testEnemy.pos = { 6, 3 };
+		testEnemy.posImage = { testEnemy.pos.x * currentLevel.getTileWidth(), testEnemy.pos.y * currentLevel.getTileHeight() };
+		testEnemy.nTile = { 2, 2 };
+		testEnemy.animations = entity.animations;
+		testEnemy.idStaticImage = entity.idStaticImage;
+		testEnemy.nameTileSet = entity.nameTileSet;
+		testEnemy.tileDimension = entity.tileDimension;
+		testEnemy.viewLenght = 2;
+		testEnemy.lastDirection = Direction::Right;
+		currentLevel.m_entityLayers[entity.z].add(testEnemy);
+		//Init Test Enemy
 	}
 }
 
@@ -158,11 +190,6 @@ void Game::processInput()
 	{
 		m_isRunning = false;
 	}
-
-	if (InputHandler::get().isPressed(SDL_SCANCODE_W))
-	{
-		SDL_Log("w");
-	}
 }
 
 
@@ -179,28 +206,54 @@ void Game::update()
 		//Exploring
 		if (actualPhase.phase == GamePhase::Phase::Exploring)
 		{
+			//Update Player
 			if (entity.statusMovement == StatusMovement::Lock)
 			{
 				if (InputHandler::get().isPressed(SDL_SCANCODE_W))
 				{
-					entity.startMove(Direction::Up);
+					entity.startMove(Direction::Up, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
 				}
 				else if (InputHandler::get().isPressed(SDL_SCANCODE_S))
 				{
-					entity.startMove(Direction::Down);
+					entity.startMove(Direction::Down, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
 				}
 				else if (InputHandler::get().isPressed(SDL_SCANCODE_D))
 				{
-					entity.startMove(Direction::Right);
+					entity.startMove(Direction::Right, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
 				}
 				else if (InputHandler::get().isPressed(SDL_SCANCODE_A))
 				{
-					entity.startMove(Direction::Left);
+					entity.startMove(Direction::Left, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
 				}
 			}
 
-			entity.update(s_deltaTime, currentLevel.m_tileMaps[entity.z]);
+			entity.update(s_deltaTime, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
 			Camera::get().updatePos(entity.posImage);
+			//Update Player
+
+			//Update Npc
+			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
+			{
+				for (auto cNpc : currentLevel.m_entityLayers[z].m_npcs)
+				{
+					cNpc.update(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+				}
+			}
+			//Update Npc
+
+			//Update Enemy
+			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
+			{
+				for (auto cEnemy : currentLevel.m_entityLayers[z].m_enemies)
+				{
+					cEnemy.update(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+					if (cEnemy.detectPlayer(currentLevel.m_entityLayers[z].m_idEntities))
+					{
+						SDL_Log("heyyyyyyyyy");
+					}
+				}
+			}
+			//Update Enemy
 		}
 		//Exploring
 
@@ -230,71 +283,6 @@ void Game::generateOutput()
 			//Clear Screen
 			Game::get().clearColorScreen(Color(0, 255, 255, 255));
 			//Clear Screen
-
-
-
-
-			////Rendering Level
-			//Vector2i intPosPlayer = (Vector2i)pos;
-			//Vector2i intTilePosPlayer = { intPosPlayer.x / currentLevel.getTileWidth(), intPosPlayer.y / currentLevel.getTileHeight() };
-
-			//Vector2i nTileToRender = { (((screenDimension.x / currentLevel.getTileWidth()) - 1) / 2), (((screenDimension.y / currentLevel.getTileHeight()) - 1) / 2) };
-			//Vector2i backToRender = { intTilePosPlayer.x - nTileToRender.x - 2,intTilePosPlayer.y - nTileToRender.y - 2 };
-			//Vector2i frontToRender = { intTilePosPlayer.x + nTileToRender.x + 2,intTilePosPlayer.y + nTileToRender.y + 2 };
-
-			//Vector2i startRectRendering = intPosPlayer - Vector2i(screenDimension.x / 2, screenDimension.y / 2);
-			//Vector2i endRectRendering = intPosPlayer + Vector2i(screenDimension.x / 2, screenDimension.y / 2);
-
-			////Controll value rendering
-			//if (startRectRendering.x <= 0)
-			//{
-			//	startRectRendering.x = 0;
-			//	endRectRendering.x = screenDimension.x;
-			//}
-			//else if (endRectRendering.x >= (currentLevel.getWidth() * currentLevel.getTileWidth()))
-			//{
-			//	startRectRendering.x = (currentLevel.getWidth() * currentLevel.getTileWidth()) - screenDimension.x;
-			//	endRectRendering.x = (currentLevel.getWidth() * currentLevel.getTileWidth());
-			//}
-			//if (startRectRendering.y <= 0)
-			//{
-			//	startRectRendering.y = 0;
-			//	endRectRendering.y = screenDimension.y;
-			//}
-			//else if (endRectRendering.y >= (currentLevel.getHeight() * currentLevel.getTileHeight()))
-			//{
-			//	startRectRendering.y = (currentLevel.getHeight() * currentLevel.getTileHeight()) - screenDimension.y;
-			//	endRectRendering.y = (currentLevel.getHeight() * currentLevel.getTileHeight());
-			//}
-			////Controll value rendering
-
-			////Controll value
-			//if (backToRender.x < 0)
-			//{
-			//	backToRender.x = 0;
-			//	frontToRender.x = screenDimension.x / currentLevel.getTileWidth();
-			//}
-
-			//if (backToRender.y < 0)
-			//{
-			//	backToRender.y = 0;
-			//	frontToRender.y = screenDimension.y / currentLevel.getTileHeight();
-			//}
-
-			//if (frontToRender.x > currentLevel.getWidth())
-			//{
-			//	frontToRender.x = currentLevel.getWidth();
-			//	backToRender.x = currentLevel.getWidth() - screenDimension.x / currentLevel.getTileWidth();
-			//}
-
-			//if (frontToRender.y > currentLevel.getHeight())
-			//{
-			//	frontToRender.y = currentLevel.getHeight();
-			//	backToRender.y = currentLevel.getHeight() - screenDimension.y / currentLevel.getTileHeight();
-			//}
-			////Controll value
-
-			//Vector2i renderAdj = { intPosPlayer.x - (intTilePosPlayer.x * currentLevel.getTileWidth()), intPosPlayer.y - (intTilePosPlayer.y * currentLevel.getTileHeight()) };
 
 			//Rendering currentLevel
 			for (int i = 0; i < currentLevel.m_tileMaps.size(); i++)
@@ -358,11 +346,23 @@ void Game::generateOutput()
 				//Render Player
 				if (entity.z == i)
 				{
-					//image.blit(entity.pos);
-					entityTileSetHandler.blitImageTile(entity.getIdImage(), Camera::get().getPlayerPos(Camera::get().getStartRectRendering()));
-					//currentLevel.m_tileSetHandler.blitImageTile(entity.getIdImage(), "player.tsx", entity.posImage)
+					entity.render(Camera::get().getPlayerPos(), entityTileSetHandler);
 				}
 				//Render Player
+
+				//Render Npc
+				for (auto cNpc : currentLevel.m_entityLayers[i].m_npcs)
+				{
+					cNpc.render(Camera::get().getPosInProspective(cNpc.posImage), entityTileSetHandler);
+				}
+				//Render Npc
+
+				//Render Npc
+				for (auto cEnemy : currentLevel.m_entityLayers[i].m_enemies)
+				{
+					cEnemy.render(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
+				}
+				//Render Npc
 
 				//Rendering Other TileLayer
 				for (int j = 1; j < currentLevel.m_graphicLayer[i].size(); j++)
@@ -372,8 +372,6 @@ void Game::generateOutput()
 				//Rendering Other TileLayer
 			}
 			//Rendering currentLevel
-
-			//currentLevel.m_graphicLayer[2][0].blit({ 0, 0 }, startRectRendering, screenDimension);
 
 			//Render Image
 			renderGraphics();

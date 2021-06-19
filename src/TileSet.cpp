@@ -136,7 +136,7 @@ Surface TileSet::getSurface()
 
 
 
-void TileSet::blitImageTile(uint16_t visualType, const Vector2i& pos)
+void TileSet::blitImageTile(uint16_t visualType, const Vector2i& pos) const
 {
 	Vector2i posTileSetImage = {0, visualType / m_columns};
 	posTileSetImage.x = visualType - (posTileSetImage.y * m_columns);
@@ -146,7 +146,7 @@ void TileSet::blitImageTile(uint16_t visualType, const Vector2i& pos)
 
 
 
-void TileSet::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other)
+void TileSet::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other) const
 {
 	if (m_withSurface)
 	{
@@ -159,21 +159,21 @@ void TileSet::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface&
 
 
 
-bool TileSet::isWithSurface()
+bool TileSet::isWithSurface() const
 {
 	return m_withSurface;
 }
 
 
 
-uint16_t TileSet::getFirstVisualType()
+uint16_t TileSet::getFirstVisualType() const
 {
 	return m_firstVisualType;
 }
 
 
 
-std::string TileSet::getFilePath()
+std::string TileSet::getFilePath() const
 {
 	return m_filePath;
 }
@@ -187,9 +187,16 @@ CommonTile& TileSet::getTile(int index)
 
 
 
-const Vector2i TileSet::getTileDimension()
+const Vector2i TileSet::getTileDimension() const
 {
 	return m_tileDimension;
+}
+
+
+
+uint16_t TileSet::getColumns() const
+{
+	return m_columns;
 }
 //------------------------------------------------------------------------------
 //TileSet Class
@@ -209,7 +216,7 @@ void TileSetHandler::addTileSet(TileSet& tileSet)
 
 
 
-void TileSetHandler::blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos)
+void TileSetHandler::blitImageTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos) const
 {
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
@@ -226,7 +233,7 @@ void TileSetHandler::blitImageTile(uint16_t index, const std::string& nameTileSe
 
 
 
-void TileSetHandler::blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other)
+void TileSetHandler::blitSurfaceTile(uint16_t index, const std::string& nameTileSet, const Vector2i& pos, Surface& other) const
 {
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
@@ -243,7 +250,7 @@ void TileSetHandler::blitSurfaceTile(uint16_t index, const std::string& nameTile
 
 
 
-void TileSetHandler::blitImageTile(uint16_t visualType, const Vector2i& pos)
+void TileSetHandler::blitImageTile(uint16_t visualType, const Vector2i& pos) const
 {
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
@@ -260,7 +267,7 @@ void TileSetHandler::blitImageTile(uint16_t visualType, const Vector2i& pos)
 
 
 
-void TileSetHandler::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other)
+void TileSetHandler::blitSurfaceTile(uint16_t visualType, const Vector2i& pos, Surface& other) const
 {
 	int j = 0;
 	for (int i = 0; i < m_tileSets.size(); i++)
@@ -318,6 +325,21 @@ CommonTile& TileSetHandler::getTile(int index, const std::string& nameTileSet)
 const Vector2i TileSetHandler::getTileDimension()
 {
 	return m_tileSets[0].getTileDimension();
+}
+
+
+
+const TileSet& TileSetHandler::getTileSet(const std::string& nameTileSet) const
+{
+	for (int i = 0; i < m_tileSets.size(); i++)
+	{
+		if (isInString(m_tileSets[i].getFilePath(), nameTileSet))
+		{
+			return m_tileSets[i];
+		}
+	}
+
+	//aggiungere assert se non trova niente
 }
 //------------------------------------------------------------------------------
 //TileSetHandler Class

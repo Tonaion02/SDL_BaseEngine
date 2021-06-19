@@ -187,7 +187,7 @@ uint32_t Image::getIndexTexture()
 
 
 
-void Image::blit(const Vector2i& pos)
+void Image::blit(const Vector2i& pos) const
 {
 	SDL_Rect srcRect, destRect;
 	
@@ -206,7 +206,7 @@ void Image::blit(const Vector2i& pos)
 
 
 
-void Image::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dimRect)
+void Image::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dimRect) const
 {
 	SDL_Rect srcRect, destRect;
 
@@ -306,7 +306,7 @@ void Surface::setAlpha(uint32_t alpha)
 
 
 
-void Surface::blit(const Vector2i& pos, Surface& other)
+void Surface::blit(const Vector2i& pos, Surface& other) const
 {
 	SDL_Rect srcRect, destRect;
 
@@ -325,7 +325,7 @@ void Surface::blit(const Vector2i& pos, Surface& other)
 
 
 
-void Surface::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dim, Surface& other)
+void Surface::blit(const Vector2i& pos, const Vector2i& startPos, const Vector2i& dim, Surface& other) const
 {
 	SDL_Rect srcRect, destRect;
 
