@@ -83,4 +83,21 @@ struct CommonTile
 			return false;
 		}
 	}
+
+	bool blockView()
+	{
+		switch (realType)
+		{
+		case Void:
+		case Graphic:
+		case Ground:
+		case Sea:
+		case Chest:
+		case Grass:
+			return false;
+		case Obstacle:
+		case Openable:
+			return true;
+		}
+	}
 };

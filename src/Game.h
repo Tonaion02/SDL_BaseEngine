@@ -95,6 +95,8 @@ protected:
 	StatusHandler<GamePhase> statusHandler;
 
 	TileSetHandler entityTileSetHandler;
+
+	int currentEnemy = -1;
 protected:
 
 	Entity entity;

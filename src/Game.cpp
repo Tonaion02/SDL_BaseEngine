@@ -17,7 +17,7 @@
 //TEST NECESSARI:
 //-Aggiungere tile modificati un pò in giro
 //-Far sostituire automaticamente gli UniqueTile Type nel first layer del TileLayer
-//-creare funzione che permette di andare a modificare gli fps(importante controllare se è vsync e nel caso non farlo aggiornare)
+//-Creare funzione che permette di andare a modificare gli fps(importante controllare se è vsync e nel caso non farlo aggiornare)
 //
 
 //------------------------------------------------------------------------------------
@@ -125,22 +125,58 @@ void Game::first()
 
 
 		//Init Test Npc
-		Npc testNpc = Npc();
-		testNpc.pos = { 3, 3 };
-		testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
-		testNpc.nTile = { 2, 2 };
-		testNpc.animations = entity.animations;
-		testNpc.idStaticImage = entity.idStaticImage;
-		testNpc.nameTileSet = entity.nameTileSet;
-		testNpc.tileDimension = entity.tileDimension;
-		currentLevel.m_entityLayers[entity.z].add(testNpc);
-		//Init Test Npc
+		//Npc testNpc = Npc();
+		//testNpc.pos = { 5, 3 };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.nTile = { 2, 2 };
+		//testNpc.animations = entity.animations;
+		//testNpc.idStaticImage = entity.idStaticImage;
+		//testNpc.nameTileSet = entity.nameTileSet;
+		//testNpc.tileDimension = entity.tileDimension;
+		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+
+
+
+		//testNpc = Npc();
+		//testNpc.pos = { 9, 3 };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.nTile = { 2, 2 };
+		//testNpc.animations = entity.animations;
+		//testNpc.idStaticImage = entity.idStaticImage;
+		//testNpc.nameTileSet = entity.nameTileSet;
+		//testNpc.tileDimension = entity.tileDimension;
+		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+
+
+
+		//testNpc = Npc();
+		//testNpc.pos = { 6, 1 };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.nTile = { 2, 2 };
+		//testNpc.animations = entity.animations;
+		//testNpc.idStaticImage = entity.idStaticImage;
+		//testNpc.nameTileSet = entity.nameTileSet;
+		//testNpc.tileDimension = entity.tileDimension;
+		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+
+
+
+		//testNpc = Npc();
+		//testNpc.pos = { 7, 5 };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.nTile = { 2, 2 };
+		//testNpc.animations = entity.animations;
+		//testNpc.idStaticImage = entity.idStaticImage;
+		//testNpc.nameTileSet = entity.nameTileSet;
+		//testNpc.tileDimension = entity.tileDimension;
+		//currentLevel.m_entityLayers[entity.z].add(testNpc);
 
 
 
 		//Init Test Enemy
 		Enemy testEnemy = Enemy();
-		testEnemy.pos = { 6, 3 };
+		testEnemy.z = entity.z;
+		testEnemy.pos = { 16, 3 };
 		testEnemy.posImage = { testEnemy.pos.x * currentLevel.getTileWidth(), testEnemy.pos.y * currentLevel.getTileHeight() };
 		testEnemy.nTile = { 2, 2 };
 		testEnemy.animations = entity.animations;
@@ -149,6 +185,21 @@ void Game::first()
 		testEnemy.tileDimension = entity.tileDimension;
 		testEnemy.viewLenght = 2;
 		testEnemy.lastDirection = Direction::Right;
+		testEnemy.allertingAnimation = StaticAnimation({ 0 , 1 }, "playerTileSet16.tsx", 0.2f, {0, 0});
+		//testEnemy.allertingAnimation.loop();
+		testEnemy.delayChangeDirection = Delay(1.0f);
+		std::vector<Direction> steps;
+		steps.push_back(Direction::Down);
+		steps.push_back(Direction::Down);
+		steps.push_back(Direction::Left);
+		steps.push_back(Direction::Down);
+		steps.push_back(Direction::Down);
+		steps.push_back(Direction::Down);
+		steps.push_back(Direction::Down);
+
+		testEnemy.route = Route(steps);
+		testEnemy.withRoute = true;
+		testEnemy.stop = true;
 		currentLevel.m_entityLayers[entity.z].add(testEnemy);
 		//Init Test Enemy
 	}
@@ -172,17 +223,17 @@ void Game::init()
 
 void Game::processInput()
 {
-	SDL_Event event;
+	//SDL_Event event;
 
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			m_isRunning = false;
-		break;
-		}
-	}
+	//while (SDL_PollEvent(&event))
+	//{
+	//	switch (event.type)
+	//	{
+	//	case SDL_QUIT:
+	//		m_isRunning = false;
+	//	break;
+	//	}
+	//}
 
 	InputHandler::get().update();
 
@@ -190,6 +241,14 @@ void Game::processInput()
 	{
 		m_isRunning = false;
 	}
+
+	if (InputHandler::get().isQuit())
+	{
+		m_isRunning = false;
+	}
+
+	//SDL_Log(std::to_string(InputHandler::get().getPos().x).c_str());
+	//SDL_Log(std::to_string(InputHandler::get().isMousePressed(2)).c_str());
 }
 
 
@@ -204,53 +263,114 @@ void Game::update()
 		GamePhase::StatusGamePhase statusActualPhase = statusHandler.getStatus(indexPhase).status;
 
 		//Exploring
-		if (actualPhase.phase == GamePhase::Phase::Exploring)
+		if (actualPhase.phase == GamePhase::Phase::Exploring && statusActualPhase != GamePhase::StatusGamePhase::Off)
 		{
-			//Update Player
-			if (entity.statusMovement == StatusMovement::Lock)
+			//Verify if a Battle is Started
+			if (statusHandler.searchStatus(GamePhase::Phase::Battle) == -1)
 			{
-				if (InputHandler::get().isPressed(SDL_SCANCODE_W))
+				//Verify if an Entity see the Player
+				int indexEnemy = -1;
+				for (auto& cEnemy : currentLevel.m_entityLayers[entity.z].m_enemies)
 				{
-					entity.startMove(Direction::Up, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					indexEnemy++;
+					if (entity.statusMovement == StatusMovement::Lock)
+					{
+						if (cEnemy.statusMovement == StatusMovement::Lock && cEnemy.statusFighting == StatusFighting::Alive && cEnemy.currentActivity == ActivityEnemy::Exploring)
+						{
+							if (cEnemy.detectPlayer(currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities))
+							{
+								SDL_Log("heyyyyyyyy");
+								cEnemy.currentActivity = ActivityEnemy::Allerting;
+								cEnemy.allertingAnimation.setPos({ cEnemy.posImage.x, cEnemy.posImage.y - cEnemy.tileDimension.y });
+								cEnemy.allertingAnimation.start();
+
+								currentEnemy = indexEnemy;
+
+								GamePhase battlePhase = GamePhase(GamePhase::Phase::Battle);
+								battlePhase.status = GamePhase::StatusGamePhase::Pause;
+								statusHandler.addStatus(battlePhase);
+								statusHandler.getStatus(indexPhase).status = GamePhase::StatusGamePhase::Pause;
+							}
+						}
+					}
 				}
-				else if (InputHandler::get().isPressed(SDL_SCANCODE_S))
+				//Verify if an Entity see the Player
+
+
+
+				//Update Player Direction
+				if (entity.statusMovement == StatusMovement::Lock)
 				{
-					entity.startMove(Direction::Down, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					if (InputHandler::get().isPressed(SDL_SCANCODE_W))
+					{
+						entity.startMove(Direction::Up, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					}
+					else if (InputHandler::get().isPressed(SDL_SCANCODE_S))
+					{
+						entity.startMove(Direction::Down, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					}
+					else if (InputHandler::get().isPressed(SDL_SCANCODE_D))
+					{
+						entity.startMove(Direction::Right, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					}
+					else if (InputHandler::get().isPressed(SDL_SCANCODE_A))
+					{
+						entity.startMove(Direction::Left, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					}
 				}
-				else if (InputHandler::get().isPressed(SDL_SCANCODE_D))
+				//Update Player Direction
+			}
+			//Verify if a Battle is Started
+
+
+
+			//Verify when is terminated the animation of player or entity after starting of battle
+			if(statusHandler.searchStatus(GamePhase::Phase::Battle) != -1 
+				&& statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Battle)).status == GamePhase::StatusGamePhase::Pause)
+			{
+				if (currentLevel.m_entityLayers[entity.z].m_enemies[currentEnemy].currentActivity == ActivityEnemy::Fighting)
 				{
-					entity.startMove(Direction::Right, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
-				}
-				else if (InputHandler::get().isPressed(SDL_SCANCODE_A))
-				{
-					entity.startMove(Direction::Left, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+					statusHandler.getStatus(indexPhase).status = GamePhase::StatusGamePhase::Off;
+					statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Battle)).status = GamePhase::StatusGamePhase::On;
 				}
 			}
+			//Verify when is terminated the animation of player or entity after starting of battle
 
-			entity.update(s_deltaTime, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
-			Camera::get().updatePos(entity.posImage);
+
+
 			//Update Player
+			entity.update(s_deltaTime, currentLevel.m_tileMaps[entity.z], currentLevel.m_entityLayers[entity.z].m_idEntities);
+			//Update Player
+
+
+
+			//Update Camera Position
+			Camera::get().updatePos(entity.posImage);
+			//Update Camera Position
+
+
 
 			//Update Npc
 			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
 			{
-				for (auto cNpc : currentLevel.m_entityLayers[z].m_npcs)
+				for (auto& cNpc : currentLevel.m_entityLayers[z].m_npcs)
 				{
 					cNpc.update(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
 				}
 			}
 			//Update Npc
 
+
+
 			//Update Enemy
 			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
 			{
-				for (auto cEnemy : currentLevel.m_entityLayers[z].m_enemies)
+				for (auto& cEnemy : currentLevel.m_entityLayers[z].m_enemies)
 				{
-					cEnemy.update(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
-					if (cEnemy.detectPlayer(currentLevel.m_entityLayers[z].m_idEntities))
-					{
-						SDL_Log("heyyyyyyyyy");
-					}
+					cEnemy.updateEnemy(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+					//SDL_Log(std::to_string(cEnemy.decideMovement(currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities)).c_str());
+					
+					//SDL_Log(std::to_string(cEnemy.route.getCurrentDirection()).c_str());
 				}
 			}
 			//Update Enemy
@@ -260,6 +380,19 @@ void Game::update()
 
 
 		//Battling
+		else if (actualPhase.phase == GamePhase::Phase::Battle)
+		{
+			if (statusActualPhase == GamePhase::StatusGamePhase::Pause)
+			{
+				//Attendere che finiscano le animazioni in exploring
+				int wewe = 0;
+			}
+			else if (statusActualPhase == GamePhase::StatusGamePhase::On)
+			{
+				//Battle vera e propria
+				SDL_Log("BATTLE!!!!!!!!!!");
+			}
+		}
 		//Battling
 
 
@@ -276,9 +409,10 @@ void Game::generateOutput()
 	for (int indexPhase = statusHandler.getSize() - 1; indexPhase >= 0; indexPhase--)
 	{
 		GamePhase actualPhase = statusHandler.getStatus(indexPhase);
+		GamePhase::StatusGamePhase statusActualPhase = statusHandler.getStatus(indexPhase).status;
 
 		//Exploring
-		if (actualPhase.phase == GamePhase::Phase::Exploring)
+		if (actualPhase.phase == GamePhase::Phase::Exploring && statusActualPhase != GamePhase::StatusGamePhase::Off)
 		{
 			//Clear Screen
 			Game::get().clearColorScreen(Color(0, 255, 255, 255));
@@ -360,7 +494,8 @@ void Game::generateOutput()
 				//Render Npc
 				for (auto cEnemy : currentLevel.m_entityLayers[i].m_enemies)
 				{
-					cEnemy.render(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
+					//cEnemy.render(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
+					cEnemy.renderEnemy(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
 				}
 				//Render Npc
 
@@ -382,6 +517,19 @@ void Game::generateOutput()
 
 
 		//Battling
+		else if (actualPhase.phase == GamePhase::Phase::Battle)
+		{
+			if (statusActualPhase == GamePhase::StatusGamePhase::On)
+			{
+				//Clear Screen
+				Game::get().clearColorScreen(Color(0, 0, 0, 0));
+				//Clear Screen
+				
+				//Render Image
+				renderGraphics();
+				//Render Image
+			}
+		}
 		//Battling
 
 

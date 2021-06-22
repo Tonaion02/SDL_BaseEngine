@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
  <tileset firstgid="1" source="../tileset/level0.tsx"/>
- <object gid="12" width="32" height="32">
+ <object gid="12" width="16" height="16">
   <properties>
    <property name="UniqueTileType" type="int" value="7"/>
    <property name="destructed" type="bool" value="false"/>

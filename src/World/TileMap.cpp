@@ -105,7 +105,14 @@ void TileMap::reactTile(const Vector2i pos, int layer)
 
 CommonTile& TileMap::getCommonTile(int x, int y, int layer)
 {
-	CommonTile tile = m_tileLayers[layer].m_tiles[y][x];
+	//CommonTile tile = m_tileLayers[layer].m_tiles[y][x];
+	return m_tileLayers[layer].m_tiles[y][x];
+}
+
+
+
+CommonTile TileMap::getCommonTile(int x, int y, int layer) const
+{
 	return m_tileLayers[layer].m_tiles[y][x];
 }
 

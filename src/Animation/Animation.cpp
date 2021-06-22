@@ -10,15 +10,14 @@
 StaticAnimation::StaticAnimation(const std::vector<uint16_t>& idImages, const std::string& nameTileSet, float time, const Vector2i& pos)
 	:m_pos(pos), m_nameTileSet(nameTileSet), m_time(time), m_idImages(idImages)
 {
-	//m_incrementIndex = 1.0f / ((m_time / (float)m_idImages.size()) * Options::get().getFps());
-	m_incrementIndex = m_idImages.size() / m_time;
+	m_incrementIndex = m_idImages.size() / (m_time * 1000.0f);
 }
 
 void StaticAnimation::animate(float deltaTime)
 {
 	if (m_running)
 	{
-		m_index += m_incrementIndex * deltaTime;
+		m_index += m_incrementIndex * (deltaTime * 1000.0f);
 		if (m_index >= m_idImages.size())
 		{
 			m_index = 0.0f;
@@ -30,7 +29,7 @@ void StaticAnimation::animate(float deltaTime)
 	}
 }
 
-uint16_t StaticAnimation::getIdImage()
+uint16_t StaticAnimation::getIdImage() const
 {
 	return m_idImages[(int)m_index];
 }
@@ -54,6 +53,11 @@ void StaticAnimation::loop()
 bool StaticAnimation::isLoop()
 {
 	return m_loop;
+}
+
+void StaticAnimation::setPos(const Vector2i& pos)
+{
+	m_pos = pos;
 }
 //------------------------------------------------------------------------------------
 //StaticAnimation Class

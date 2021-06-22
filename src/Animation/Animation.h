@@ -39,9 +39,12 @@ public:
 
 	void loop();
 	bool isLoop();
-	uint16_t getIdImage();
+
+	uint16_t getIdImage() const;
 
 	Vector2i getPos();
+
+	void setPos(const Vector2i& pos);
 
 protected:
 	Vector2i m_pos;

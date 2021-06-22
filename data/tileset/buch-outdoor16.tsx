@@ -172,7 +172,7 @@
  <tile id="168" type="3"/>
  <tile id="169" type="3"/>
  <tile id="170" type="3"/>
- <tile id="171" type="3"/>
+ <tile id="171" type="7"/>
  <tile id="172" type="3"/>
  <tile id="173" type="3"/>
  <tile id="174" type="3"/>

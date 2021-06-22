@@ -48,6 +48,8 @@ enum Direction
 	Left
 };
 
+Direction reverseDirection(Direction direction);
+
 
 
 enum StatusMovement
@@ -82,20 +84,20 @@ struct Entity
 public:
 	Entity() 
 		:lastDirection(Direction::Down), currentDirection(Direction::NoneDirection), 
-		typeTerrain(TypeTerrain::Solid), statusMovement(StatusMovement::Lock), 
+		typeTerrain(TypeTerrain::Solid), statusMovement(StatusMovement::Lock), velocity(Velocity::Walking),
 		delayChangeDirection(Delay(0.2f)), nTile({1, 2}), nameTileSet("playerTileSet16.tsx")
 	{}
 
 	virtual void move(Direction direction, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void startMove(Direction direction, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void updateDirection(Direction direction);
-	virtual bool controllMove(Direction direction, TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
-	virtual bool controllPosition(const Vector2i& t, TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual bool controllMove(Direction direction, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual bool controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
 	virtual void update(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
-	virtual uint16_t getIdImage();
+	virtual uint16_t getIdImage() const;
 	virtual void updateVelocity(Velocity velocity);
 	virtual void updateSurface(TypeTerrain typeTerrain);
-	virtual void render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler);
+	virtual void render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
 
 public:
 	static bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities);
@@ -135,6 +137,25 @@ public:
 
 
 
+enum ActivityEnemy
+{
+	NoneActivity = -1,
+	Exploring,
+	Allerting,
+	Fighting
+};
+
+
+
+enum StatusFighting
+{
+	NoneStatusFighting = -1,
+	Alive,
+	Lost
+};
+
+
+
 struct Npc : public Entity
 {
 public:
@@ -149,13 +170,48 @@ public:
 
 
 
+struct Route
+{
+public:
+	Route() :inverted(false), steps(std::vector<Direction>(0)), currentStep(-1) {}
+	Route(const std::vector<Direction>& steps);
+
+	void reverse();
+	void update();
+	Direction getCurrentDirection() const;
+
+private:
+	std::vector<Direction> steps;
+	int currentStep=-1;
+	bool inverted = false;
+};
+
+
+
 struct Enemy : public Entity
 {
 public:
 	Enemy() :Entity() {}
 	Enemy(const std::string& filePath);
 
-	virtual bool detectPlayer(const std::vector<std::vector<idEntity>>& idEntities) const;
+	virtual bool detectPlayer(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
+	virtual void updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void startBattle();
+	virtual Direction decideMovement(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual void renderEnemy(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
+	virtual void endBattle();
 public:
 	uint16_t viewLenght = 0;
+	
+	bool stop = true;
+
+	StaticAnimation allertingAnimation;
+
+	ActivityEnemy currentActivity = ActivityEnemy::Exploring;
+
+	StatusFighting statusFighting = StatusFighting::Alive;
+
+	//Value that define if he moves casual in the map or with route
+	bool withRoute = false;
+	Route route;
 };

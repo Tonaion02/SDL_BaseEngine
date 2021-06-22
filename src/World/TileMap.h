@@ -61,6 +61,7 @@ public:
 
 	//Get Common Tile of a specific layer with x and y
 	CommonTile& getCommonTile(int x, int y, int layer);
+	CommonTile getCommonTile(int x, int y, int layer) const;
 
 	uint16_t getMaxLayer() const;
 	uint16_t getMaxWidth() const;
