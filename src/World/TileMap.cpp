@@ -45,7 +45,7 @@ UniqueTileLayer::UniqueTileLayer(const Vector2i& dimension)
 bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler)
 {
 	RealType realType;
-
+	
 	//Search the properties that reppresent the type of UniqueTile
 	for (int i = 0; i < templateObject.properties.size(); i++)
 	{
@@ -64,8 +64,15 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateO
 		m_indexMatrix[pos.y][pos.x] = m_destructbleTiles.size() - 1;
 		break;
 	case Chest:
+		m_chestTiles.push_back(ChestTile(templateObject, tileSetHandler));
+		m_indexMatrix[pos.y][pos.x] = m_chestTiles.size() - 1;
 		break;
 	case Openable:
+		break;
+
+	case Stairs:
+		m_stairsTiles.push_back(StairsTile(templateObject, tileSetHandler));
+		m_indexMatrix[pos.y][pos.x] = m_stairsTiles.size() - 1;
 		break;
 	default:
 		break;

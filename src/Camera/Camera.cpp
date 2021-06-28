@@ -40,9 +40,11 @@ void Camera::updatePos(const Vector2i pos)
 	this->s_pos = {pos.x + (s_tileDimension.x/2), pos.y + (s_tileDimension.y/2)};
 	//Aggiornare anche RectRendering
 
-	s_intTilePos = { s_pos.x / s_levelDimension.x, s_pos.y / s_levelDimension.y };
-
-	s_nTileToRender = { (((Options::get().getScreenDimension().x / s_levelDimension.x) - 1) / 2), (((Options::get().getScreenDimension().y / s_levelDimension.y) - 1) / 2) };
+	//s_intTilePos = { (s_pos.x / s_tileDimension.x) / s_levelDimension.x, (s_pos.y / s_tileDimension.y) / s_levelDimension.y };
+	
+	s_intTilePos = { (s_pos.x / s_tileDimension.x) , (s_pos.y / s_tileDimension.y) };
+	//s_nTileToRender = { (((Options::get().getScreenDimension().x / s_levelDimension.x) - 1) / 2), (((Options::get().getScreenDimension().y / s_levelDimension.y) - 1) / 2) };
+	s_nTileToRender = { (((Options::get().getScreenDimension().x / s_tileDimension.x) - 1) / 2), (((Options::get().getScreenDimension().y / s_tileDimension.y) - 1) / 2) };
 	s_backToRender = { s_intTilePos.x - s_nTileToRender.x - 2,s_intTilePos.y - s_nTileToRender.y - 2 };
 	s_frontToRender = { s_intTilePos.x + s_nTileToRender.x + 2,s_intTilePos.y + s_nTileToRender.y + 2 };
 	s_startRectRendering = s_pos - Vector2i(Options::get().getScreenDimension().x / 2, Options::get().getScreenDimension().y / 2);

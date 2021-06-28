@@ -7,11 +7,11 @@
 //------------------------------------------------------------------------------------
 //World Class
 //------------------------------------------------------------------------------------
-bool World::loadLevel(const std::string& filePath)
+bool World::loadLevel(const std::string& filePath, TileSetHandler& tileSetHandler)
 {
 	s_indexLevels[filePath] = s_currentIndexLevels;
 	s_currentIndexLevels++;
-	s_levels.push_back(Level(filePath));
+	s_levels.push_back(Level(filePath, tileSetHandler));
 	return true;
 }
 

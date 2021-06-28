@@ -6,6 +6,8 @@
 
 #include "Graphic/Image.h"
 
+#include "XMLobject.h"
+
 
 
 
@@ -14,12 +16,14 @@ class Level
 {
 public:
 	Level() {}
-	Level(const std::string& filePathTileMap);
+	Level(const std::string& filePathTileMap, TileSetHandler& entityTileSetHandler);
 
 	uint16_t getWidth();
 	uint16_t getHeight();
 	uint16_t getTileWidth();
 	uint16_t getTileHeight();
+
+	Image& getGraphicLayer(uint16_t z, uint16_t z2);
 
 public:
 	std::vector<std::vector<Image>> m_graphicLayer;

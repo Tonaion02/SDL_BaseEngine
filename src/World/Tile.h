@@ -20,7 +20,8 @@ enum RealType
 	Grass, //6
 	Destructble, //7
 	Chest, //8
-	Openable //9
+	Openable, //9
+	Stairs //10
 };
 
 
@@ -37,7 +38,7 @@ struct CommonTile
 	RealType realType;
 	uint16_t visualType;
 
-	bool isUnique() 
+	bool isUnique() const
 	{
 		switch (realType)
 		{
@@ -52,11 +53,12 @@ struct CommonTile
 		case Destructble:
 		case Chest:
 		case Openable:
+		case Stairs:
 			return true;
 		}
 	}
 
-	bool isWalkable()
+	bool isWalkable() const
 	{
 		switch (realType)
 		{
@@ -69,11 +71,12 @@ struct CommonTile
 
 		case Grass:
 		case Ground:
+		case Stairs:
 			return true;
 		}
 	}
 
-	bool isSea()
+	bool isSea() const
 	{
 		switch (realType)
 		{
@@ -84,7 +87,7 @@ struct CommonTile
 		}
 	}
 
-	bool blockView()
+	bool blockView() const
 	{
 		switch (realType)
 		{
@@ -95,8 +98,10 @@ struct CommonTile
 		case Chest:
 		case Grass:
 			return false;
+
 		case Obstacle:
 		case Openable:
+		case Stairs:
 			return true;
 		}
 	}

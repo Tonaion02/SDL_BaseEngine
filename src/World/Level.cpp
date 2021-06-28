@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------------
 //Level Class
 //------------------------------------------------------------------------------------
-Level::Level(const std::string& filePathTileMap)
+Level::Level(const std::string& filePathTileMap, TileSetHandler& entityTileSetHandler)
 {
 	std::vector<std::string> TileMapLines = getlines(filePathTileMap);
 
@@ -23,6 +23,8 @@ Level::Level(const std::string& filePathTileMap)
 	int currentNTileMap = -1;
 
 	CacheTemplateObjectHandler cacheUniqueTileTemplates;
+
+	CacheTemplateObjectHandler cacheEntities;
 
 	//Excract info from File
 	for (int i = 0; i < TileMapLines.size(); i++)
@@ -133,6 +135,13 @@ Level::Level(const std::string& filePathTileMap)
 								}
 								//Controll if is a UniqueTileLayer
 
+								//Controll if is a EntityLayer
+								else if (info == "Entity")
+								{
+									choice = 1;
+								}
+								//Controll if is a EntityLayer
+
 							}
 						}
 						//Excract info from intestation of ObjectGroup
@@ -142,6 +151,8 @@ Level::Level(const std::string& filePathTileMap)
 						//Decide if you create a UniqueTileLayer or EnemyLayer or other
 						i++;
 						line = TileMapLines[i];
+
+						//UniqueTileLayer Creation
 						if (choice == 0)
 						{
 							m_tileMaps[currentNTileMap].m_uniqueTileLayer = UniqueTileLayer({ m_width, m_height });
@@ -199,6 +210,7 @@ Level::Level(const std::string& filePathTileMap)
 											line = TileMapLines[i];
 
 
+
 											if (isInString(line, "<property"))
 											{
 												std::vector<std::string> infoAboutProperty = split(line, " ");
@@ -213,8 +225,6 @@ Level::Level(const std::string& filePathTileMap)
 													}
 												}
 											}
-
-
 										}
 									}
 									//If is the template is modified charge changes
@@ -225,6 +235,102 @@ Level::Level(const std::string& filePathTileMap)
 								}
 								i++;
 							}
+						}
+						//UniqueTileLayer Creation
+
+
+
+						else if (choice == 1)
+						{
+							m_entityLayers.push_back(EntityLayer(m_width, m_height));
+
+							while (!isInString(TileMapLines[i], "</objectgroup"))
+							{
+								line = TileMapLines[i];
+								
+								if (isInString(line, "<object"))
+								{
+									bool modified = false;
+									line = removeFrontSpace(line);
+									//Controll if is a modified template searching "/"
+									if (!isInString(line, "/"))
+									{
+										modified = true;
+									}
+									//Controll if is a modified template searching "/"
+
+									//Search info about template
+									line = remove(line, "/");
+									line = remove(line, ">");
+									std::vector<std::string> infoAboutObject = split(line, " ");
+
+									std::string filePathTemplate;
+									Vector2i posObject = { 0, 0 };
+
+									for (auto info : infoAboutObject)
+									{
+										if (isInString(info, "template="))
+										{
+											filePathTemplate = removeQuotationMarks(stride(info, "template="));
+										}
+										else if (isInString(info, "x="))
+										{
+											posObject.x = std::stoi(removeQuotationMarks(stride(info, "x="))) / m_tileWidth;
+										}
+										else if (isInString(info, "y="))
+										{
+											posObject.y = std::stoi(removeQuotationMarks(stride(info, "y="))) / m_tileHeight - 1;
+										}
+									}
+									//Search info about template
+
+
+
+									//Load template and save in cache
+									cacheEntities.loadTemplateObject(filePathTemplate);
+									TemplateObject templateObject = cacheEntities.getTemplateObject(filePathTemplate);
+									//Load template and save in cache
+
+
+
+									//If is the template is modified charge changes
+									if (modified)
+									{
+										while (!isInString(line, "</object"))
+										{
+											i++;
+											line = TileMapLines[i];
+
+
+
+											if (isInString(line, "<property"))
+											{
+												std::vector<std::string> infoAboutProperty = split(line, " ");
+
+												Property property = Property(line);
+
+												for (int l = 0; l < templateObject.properties.size(); l++)
+												{
+													if (templateObject.properties[l].name == property.name)
+													{
+														templateObject.properties[l].value = property.value;
+													}
+												}
+											}
+										}
+									}
+									//If is the template is modified charge changes
+
+
+
+									//Load entity from template
+									m_entityLayers[currentNTileMap].loadEntityFromTemplate(templateObject, posObject, entityTileSetHandler);
+									//Load entity from template
+								}
+
+								i++;
+							}
+
 						}
 						//Decide if you create a UniqueTileLayer or EnemyLayer or other
 					}
@@ -352,6 +458,16 @@ Level::Level(const std::string& filePathTileMap)
 		}
 	}
 	//Print to screen the tileMaps
+}
+
+
+
+Image& Level::getGraphicLayer(uint16_t z, uint16_t z2)
+{
+	//Assert for z e z2
+	//z for tileMaps
+	//z2 for layer of one TileMap
+	return m_graphicLayer[z][z2];
 }
 
 

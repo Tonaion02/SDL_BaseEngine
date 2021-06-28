@@ -26,8 +26,8 @@ public:
 
 	void update();
 	bool isPressed(SDL_Scancode key) const;
-	Vector2i getPos() const;
 	bool isPressed(uint8_t mouseKey) const;
+	Vector2i getPos() const;
 	bool isQuit() const;
 
 protected:

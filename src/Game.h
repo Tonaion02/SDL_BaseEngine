@@ -15,6 +15,8 @@
 
 #include "Time/Delay.h"
 
+#include "Player/Player.h"
+
 
 
 
@@ -68,6 +70,7 @@ protected:
 	Game() {}
 
 	//Principle Method
+	void first();
 	void processInput();
 	void update();
 	void generateOutput();
@@ -78,8 +81,12 @@ protected:
 	void renderGraphics();
 	void updateDeltaTime();
 	void sleep();
-	void first();
+	void clearRender();
 	//Secondary Method
+
+	Level& getCurrentLevel();
+	TileMap& getTileMap(int z);
+	EntityLayer& getEntityLayer(int z);
 
 protected:
 	bool m_isRunning;
@@ -89,6 +96,8 @@ protected:
 	double s_deltaTime;
 	uint32_t s_ticksCount;
 
+	Player s_player;
+
 	Vector2i screenDimension;
 	Level currentLevel;
 
@@ -97,9 +106,10 @@ protected:
 	TileSetHandler entityTileSetHandler;
 
 	int currentEnemy = -1;
+	int zCurrentEnemy = -1;
 protected:
 
-	Entity entity;
+	//Entity entity;
 };
 
 //Rinominare tutti i getInstance() dei singleton come get()

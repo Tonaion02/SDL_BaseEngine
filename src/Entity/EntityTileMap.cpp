@@ -106,12 +106,22 @@ void Entity::startMove(Direction direction, TileMap& tileMap, std::vector<std::v
 
 				bool canRotate = true;
 
-				if (lastDirection != direction && rotateHitboxWithDirection)
+				//Aggiungere controllo se può ruotare o meno
+
+				if (rotateHitboxWithDirection)
 				{
-					if (((lastDirection == Direction::Down || lastDirection == Direction::Up) && (direction == Direction::Left || direction == Direction::Right)) || ((lastDirection == Direction::Left || lastDirection == Direction::Right) && (direction == Direction::Down || direction == Direction::Up)))
+					if (
+						((lastDirection == Direction::Down || lastDirection == Direction::Up) && (direction == Direction::Left || direction == Direction::Right)) 
+						|| 
+						((lastDirection == Direction::Left || lastDirection == Direction::Right) && (direction == Direction::Down || direction == Direction::Up)))
 					{
 						idEntity id = getIdEntity(pos, idEntities);
+
+						nTile = { nTile.y, nTile.x };
+
 						canRotate = controllPosition(pos, tileMap, idEntities);
+
+						nTile = { nTile.y, nTile.x };
 
 						if (canRotate)
 						{
@@ -188,7 +198,7 @@ void Entity::updateDirection(Direction direction)
 
 
 
-bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities)
+bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const
 {
 	//Controllo vero e proprio
 	//Controllo sulle dimensioni della TileMap
@@ -221,6 +231,9 @@ bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const s
 					{
 						return false;
 					}
+					break;
+				case Chest:
+					return false;
 					break;
 				}
 			}
@@ -260,7 +273,7 @@ bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const s
 
 
 
-bool Entity::controllMove(Direction direction, const TileMap& tileMap,const std::vector<std::vector<idEntity>>& idEntities)
+bool Entity::controllMove(Direction direction, const TileMap& tileMap,const std::vector<std::vector<idEntity>>& idEntities) const
 {
 	Vector2i t = pos;
 
@@ -304,20 +317,25 @@ void Entity::update(float deltaTime, TileMap& tileMap, std::vector<std::vector<i
 			//Due casi differenti se effettivamente la currentDirection è uguale a 
 			if (controllMove(currentDirection, tileMap, idEntities))
 			{
+				lastPos = pos;
+
 				move(currentDirection, idEntities);
+				
+				deReact(tileMap);
 
 				statusMovement = StatusMovement::InMovement;
 				animations[typeTerrain][velocity][currentDirection].setPos(posImage);
 				animations[typeTerrain][velocity][currentDirection].start();
 			}
-			//else
-			//{
-			//	updateDirection(Direction::NoneDirection);
-			//}
+			else
+			{
+				updateDirection(Direction::NoneDirection);
+			}
 		}
 	}
 
-	else if (statusMovement == StatusMovement::InMovement)
+	//Ho cambiato qua
+	if (statusMovement == StatusMovement::InMovement)
 	{
 		if (!animations[typeTerrain][velocity][currentDirection].isEnd())
 		{
@@ -325,12 +343,14 @@ void Entity::update(float deltaTime, TileMap& tileMap, std::vector<std::vector<i
 			posImage = animations[typeTerrain][velocity][currentDirection].getPos();
 		}
 
-		if (animations[typeTerrain][velocity][currentDirection].isEnd())
+		else if (animations[typeTerrain][velocity][currentDirection].isEnd())
 		{
 			statusMovement = StatusMovement::Lock;
 			updateDirection(Direction::NoneDirection);
 
 			posImage = { pos.x * tileDimension.x,pos.y * tileDimension.y };
+
+			react(tileMap);
 		}
 	}
 
@@ -339,15 +359,47 @@ void Entity::update(float deltaTime, TileMap& tileMap, std::vector<std::vector<i
 
 
 uint16_t Entity::getIdImage() const
-{
-	if (currentDirection == Direction::NoneDirection)
+{	
+	if (statusMovement == StatusMovement::Lock)
 	{
 		return idStaticImage[lastDirection];
 	}
-	else if (currentDirection != Direction::NoneDirection)
+	else if (statusMovement == StatusMovement::InMovement)
 	{
 		return animations[typeTerrain][velocity][currentDirection].getIdImage();
 	}
+}
+
+
+
+void Entity::react(TileMap& tileMap)
+{
+	CommonTile commonTile = tileMap.getCommonTile(pos.x, pos.y, 0);
+
+	if(commonTile.isUnique())
+	{
+		switch (commonTile.realType)
+		{
+		case Grass:
+			return;
+
+		case Sea:
+			return;
+
+		case Stairs:
+			return;
+
+		default:
+			return;
+		}
+	}
+}
+
+
+
+void Entity::deReact(TileMap& tileMap)
+{
+
 }
 
 
@@ -375,7 +427,26 @@ void Entity::render(const Vector2i& posInProspective, const TileSetHandler& tile
 //------------------------------------------------------------------------------------
 //Npc Class                                                                           
 //------------------------------------------------------------------------------------
+Npc::Npc(const std::string& nameEntity)
+{
 
+}
+
+
+
+void Npc::updateNpc(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities)
+{
+	//Update rest of Npc
+	update(deltaTime, tileMap, idEntities);
+	//Update rest of Npc
+}
+
+
+
+void Npc::renderNpc(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const
+{
+	render(posInProspective, tileSetHandler);
+}
 //------------------------------------------------------------------------------------
 //Npc Class                                                                           
 //------------------------------------------------------------------------------------
@@ -448,6 +519,26 @@ Direction Route::getCurrentDirection() const
 //------------------------------------------------------------------------------------
 //Enemy Class                                                                           
 //------------------------------------------------------------------------------------
+Enemy::Enemy(const std::string& nameEntity)
+{
+	std::string filePath = "data/entity/enemy/" + nameEntity;
+
+	XMLobject xmlObject = XMLobject(filePath);
+
+	for (int i = 0; i < xmlObject.xmlVariabs.size(); i++)
+	{
+		XMLvariab var = xmlObject.xmlVariabs[i];
+
+		if (var.name == "nTile")
+		{
+			std::vector<std::string> splitter = split(var.getValue("value"), ",");
+			nTile = { std::stoi(splitter[0]), std::stoi(splitter[1]) };
+		}
+	}
+}
+
+
+
 bool Enemy::detectPlayer(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const
 {
 	Vector2i start, end;
@@ -583,7 +674,7 @@ bool Enemy::detectPlayer(const TileMap& tileMap, const std::vector<std::vector<i
 
 
 
-void Enemy::updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities)
+void Enemy::takeDecision(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities)
 {
 	if (statusFighting == StatusFighting::Alive)
 	{
@@ -594,16 +685,21 @@ void Enemy::updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vect
 			{
 				if (statusMovement == StatusMovement::Lock)
 				{
+					if (!delayNextStep.isEnd())
+					{
+						delayNextStep.update(deltaTime);
+					}
 					//decides if must change direction or similar things
 					//verify if he moves in base route or random direction
 					if (withRoute)
 					{
-						if (delayChangeDirection.isEnd())
+						if (delayChangeDirection.isEnd() && delayNextStep.isEnd())
 						{
 							if (controllMove(route.getCurrentDirection(), tileMap, idEntities))
 							{
 								startMove(route.getCurrentDirection(), tileMap, idEntities);
 								route.update();
+								delayNextStep.start();
 							}
 						}
 					}
@@ -617,9 +713,15 @@ void Enemy::updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vect
 			}
 			//Moving part
 		}
+	}
+}
 
 
 
+void Enemy::updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities)
+{
+	if (statusFighting == StatusFighting::Alive)
+	{
 		if (currentActivity == ActivityEnemy::Allerting && statusMovement == StatusMovement::Lock)
 		{
 			if (!allertingAnimation.isEnd())

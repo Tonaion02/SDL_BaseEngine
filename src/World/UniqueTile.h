@@ -9,6 +9,8 @@
 
 #include "TileSet.h"
 
+#include "Item/Item.h"
+
 
 
 
@@ -42,8 +44,14 @@ struct DestructbleTile : public UniqueTile
 struct ChestTile : public UniqueTile
 {
 	ChestTile() :UniqueTile() {}
+	ChestTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler);
+
+	uint16_t getCurrentImage();
 
 	bool isOpened;
+
+	std::string nameTileSet;
+	std::array<uint16_t, 2> idImages;
 };
 
 
@@ -53,6 +61,28 @@ struct ChestTile : public UniqueTile
 struct OpenableTile : public UniqueTile
 {
 	OpenableTile() :UniqueTile() {}
+	OpenableTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler);
+
+	uint16_t getCurrentImage();
 
 	bool isOpened;
+
+	std::string nameTileSet;
+	std::array<uint16_t, 2> idImages;
+};
+
+
+
+
+
+struct StairsTile : public UniqueTile
+{
+	StairsTile() : UniqueTile() {}
+	StairsTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler);
+
+	uint16_t z;
+
+	std::string nameTileSet;
+	uint16_t idImage;
+	uint16_t direction;
 };

@@ -72,6 +72,66 @@ void EntityLayer::addPlayer(const Vector2i& posPlayer, const Vector2i& nTile)
 		}
 	}
 }
+
+
+
+bool EntityLayer::loadEntityFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler)
+{
+	//Load Entity from Template
+
+	TypeEntity typeEntity;
+	std::string nameEntity;
+
+	//Search the properties that reppresent the type of Entity
+	for (int i = 0; i < templateObject.properties.size(); i++)
+	{
+		if (templateObject.properties[i].name == "TypeEntity")
+		{
+			typeEntity = (TypeEntity)std::stoi(templateObject.properties[i].value);
+		}
+		else if (templateObject.properties[i].name == "nameEntity")
+		{
+			nameEntity = templateObject.properties[i].value;
+		}
+	}
+	//Search the properties that reppresent the type of Entity
+
+	//Decide in base to the type of Entity what Entity create
+	switch (typeEntity)
+	{
+	case NoneTypeEntity:
+	{
+		return false;
+		break;
+	}
+
+	case player:
+	{
+		return false;
+		break;
+	}
+	case npc:
+	{
+		Npc npc = Npc(nameEntity);
+		npc.pos = pos;
+		add(npc);
+		break;
+	}
+
+	case enemy:
+	{
+		Enemy enemy = Enemy(nameEntity);
+		enemy.pos = pos;
+		//add(enemy);
+		break;
+	}
+
+	}
+	//Decide in base to the type of Entity what Entity create
+
+	return true;
+	//Load Entity from Template
+}
 //------------------------------------------------------------------------------------
 //EntityLayer Class                                                                           
 //------------------------------------------------------------------------------------

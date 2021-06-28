@@ -24,7 +24,7 @@
  <tile id="20" type="4"/>
  <tile id="21" type="4"/>
  <tile id="22" type="2"/>
- <tile id="23" type="2"/>
+ <tile id="23" type="3"/>
  <tile id="24" type="3"/>
  <tile id="25" type="3"/>
  <tile id="26" type="3"/>
@@ -44,11 +44,11 @@
  <tile id="40" type="3"/>
  <tile id="41" type="3"/>
  <tile id="42" type="3"/>
- <tile id="43" type="4"/>
+ <tile id="43" type="10"/>
  <tile id="44" type="4"/>
  <tile id="45" type="4"/>
  <tile id="46" type="2"/>
- <tile id="47" type="2"/>
+ <tile id="47" type="10"/>
  <tile id="48" type="3"/>
  <tile id="49" type="3"/>
  <tile id="50" type="3"/>
@@ -92,7 +92,7 @@
  <tile id="88" type="3"/>
  <tile id="89" type="3"/>
  <tile id="90" type="3"/>
- <tile id="91" type="4"/>
+ <tile id="91" type="8"/>
  <tile id="92" type="4"/>
  <tile id="93" type="4"/>
  <tile id="94" type="4"/>
@@ -133,7 +133,7 @@
  <tile id="129" type="3"/>
  <tile id="130" type="3"/>
  <tile id="131" type="3"/>
- <tile id="132" type="3"/>
+ <tile id="132" type="4"/>
  <tile id="133" type="3"/>
  <tile id="134" type="3"/>
  <tile id="135" type="3"/>
@@ -205,7 +205,7 @@
  <tile id="201" type="3"/>
  <tile id="202" type="3"/>
  <tile id="203" type="3"/>
- <tile id="204" type="3"/>
+ <tile id="204" type="8"/>
  <tile id="205" type="4"/>
  <tile id="206" type="4"/>
  <tile id="207" type="2"/>

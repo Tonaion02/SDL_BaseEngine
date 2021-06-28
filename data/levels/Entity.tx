@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="../tileset/buch-outdoor16.tsx"/>
+ <object gid="168" width="16" height="16">
+  <properties>
+   <property name="TypeEntity" type="int" value="-1"/>
+   <property name="nameEntity" value=""/>
+  </properties>
+ </object>
+</template>

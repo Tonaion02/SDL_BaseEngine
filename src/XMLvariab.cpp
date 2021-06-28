@@ -20,21 +20,31 @@ XMLvariab::XMLvariab(const std::string& line)
 	infoAboutLine.erase(infoAboutLine.begin());
 	//Eliminate "<nameElement" from infoAboutLine
 
-	//Eliminate "/>" from last element
-	infoAboutLine[infoAboutLine.size() - 1] = remove(infoAboutLine[infoAboutLine.size() - 1], "/");
-	infoAboutLine[infoAboutLine.size() - 1] = remove(infoAboutLine[infoAboutLine.size() - 1], ">");
-	//Eliminate "/>" from last element
-
-	//Take the value and the key(name) from the line
-	std::string value;
-	std::string key;
-	for (auto info : infoAboutLine)
+	if (infoAboutLine.size() > 0)
 	{
-		value = removeQuotationMarks(stride(info, "="));
-		key = stride(info, 0, findInString(info, "="));
-		values[key] = value;
+		//Eliminate "/>" from last element
+		if (isInString(infoAboutLine[infoAboutLine.size() - 1], ">"))
+		{
+			infoAboutLine[infoAboutLine.size() - 1] = remove(infoAboutLine[infoAboutLine.size() - 1], ">");
+		}
+
+		if (isInString(infoAboutLine[infoAboutLine.size() - 1], "/"))
+		{
+			infoAboutLine[infoAboutLine.size() - 1] = remove(infoAboutLine[infoAboutLine.size() - 1], "/");
+		}
+		//Eliminate "/>" from last element
+
+		//Take the value and the key(name) from the line
+		std::string value;
+		std::string key;
+		for (auto info : infoAboutLine)
+		{
+			value = removeQuotationMarks(stride(info, "="));
+			key = stride(info, 0, findInString(info, "="));
+			values[key] = value;
+		}
+		//Take the value and the key(name) from the line
 	}
-	//Take the value and the key(name) from the line
 }
 
 

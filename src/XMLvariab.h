@@ -11,7 +11,11 @@
 struct XMLvariab
 {
 public:
-	XMLvariab() {}
+	XMLvariab() :name("") 
+	{
+		values.clear();
+		rawData.clear();
+	}
 	XMLvariab(const std::string& line);
 
 	std::string getValue(const std::string& key);
@@ -22,4 +26,8 @@ public:
 
 	//Da aggiungere in futuro(possibilità di ottenere a partire da un unordered_map e un nome una linea da inserire in un testo)
 	//std::string getLineFromValues(const std::string& name);
+
+	//Da testare 
+	bool withRawData = false;
+	std::vector<std::string> rawData;
 };

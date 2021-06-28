@@ -18,7 +18,7 @@ public:
 		return instance;
 	}
 
-	bool loadLevel(const std::string& filePath);
+	bool loadLevel(const std::string& filePath, TileSetHandler& tileSetHandler);
 	uint16_t getIndexLevel(const std::string& filePath);
 	Level& getLevel(int indexLevel);
 

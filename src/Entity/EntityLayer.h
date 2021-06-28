@@ -20,6 +20,8 @@ public:
 
 	void addPlayer(const Vector2i& posPlayer, const Vector2i& nTile);
 
+	bool loadEntityFromTemplate(const TemplateObject& templateObject, const Vector2i& pos, TileSetHandler& tileSetHandler);
+
 public:
 	TileSetHandler m_tileSetHandler;
 

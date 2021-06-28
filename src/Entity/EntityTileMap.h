@@ -12,6 +12,8 @@
 
 #include "Time/Delay.h"
 
+#include "XMLobject.h"
+
 
 
 
@@ -91,12 +93,14 @@ public:
 	virtual void move(Direction direction, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void startMove(Direction direction, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void updateDirection(Direction direction);
-	virtual bool controllMove(Direction direction, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
-	virtual bool controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
+	virtual bool controllMove(Direction direction, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
+	virtual bool controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
 	virtual void update(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual uint16_t getIdImage() const;
 	virtual void updateVelocity(Velocity velocity);
 	virtual void updateSurface(TypeTerrain typeTerrain);
+	virtual void react(TileMap& tileMap);
+	virtual void deReact(TileMap& tileMap);
 	virtual void render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
 
 public:
@@ -115,12 +119,12 @@ public:
 	Velocity velocity;
 
 	Vector2i pos;
+	Vector2i lastPos;
 	uint16_t z;
 	Vector2i posImage;
 	
 	Vector2i tileDimension;
 
-	//PER IL FUTURO, serve per individuare il numero sulle x e sulle y di tile
 	Vector2i nTile;
 
 	std::string nameTileSet;
@@ -128,7 +132,6 @@ public:
 	std::vector<uint16_t> idStaticImage;
 
 	Delay delayChangeDirection;
-	//vector di animation
 
 	bool rotateHitboxWithDirection=false;
 };
@@ -160,7 +163,10 @@ struct Npc : public Entity
 {
 public:
 	Npc() :Entity() {}
-	Npc(const std::string& filePath);
+	Npc(const std::string& nameEntity);
+
+	virtual void updateNpc(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void renderNpc(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
 
 public:
 
@@ -192,10 +198,11 @@ struct Enemy : public Entity
 {
 public:
 	Enemy() :Entity() {}
-	Enemy(const std::string& filePath);
+	Enemy(const std::string& nameEntity);
 
 	virtual bool detectPlayer(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
 	virtual void updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void takeDecision(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void startBattle();
 	virtual Direction decideMovement(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
 	virtual void renderEnemy(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
@@ -210,6 +217,8 @@ public:
 	ActivityEnemy currentActivity = ActivityEnemy::Exploring;
 
 	StatusFighting statusFighting = StatusFighting::Alive;
+
+	Delay delayNextStep;
 
 	//Value that define if he moves casual in the map or with route
 	bool withRoute = false;

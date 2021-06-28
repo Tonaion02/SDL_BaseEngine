@@ -37,9 +37,10 @@ public:
 
 public:
 	std::vector<DestructbleTile> m_destructbleTiles;
-	//std::vector<ChestTile> m_chestTiles;
-	//std::vector<OpenableTile> m_openableTiles;
-
+	std::vector<ChestTile> m_chestTiles;
+	std::vector<OpenableTile> m_openableTiles;
+	std::vector<StairsTile> m_stairsTiles;
+	
 	std::vector<std::vector<uint16_t>> m_indexMatrix;
 
 private:

@@ -86,7 +86,7 @@ void DinamicAnimation::animate(float deltaTime)
 {
 	if (m_running)
 	{
-		m_index += m_incrementIndex * deltaTime;
+		m_index += m_incrementIndex * (deltaTime * 1000.0f);
 
 		if (m_index >= m_idImages.size())
 		{

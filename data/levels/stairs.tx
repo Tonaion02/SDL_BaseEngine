@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="../tileset/buch-outdoor16.tsx"/>
+ <object gid="24" width="16" height="16">
+  <properties>
+   <property name="UniqueTileType" type="int" value="10"/>
+   <property name="images" value="43"/>
+   <property name="tileset" value="buch-outdoor16.tsx"/>
+   <property name="z" type="int" value="0"/>
+   <property name="direction" type="int" value="0"/>
+  </properties>
+ </object>
+</template>
