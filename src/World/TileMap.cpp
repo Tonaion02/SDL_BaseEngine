@@ -74,6 +74,11 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateO
 		m_stairsTiles.push_back(StairsTile(templateObject, tileSetHandler));
 		m_indexMatrix[pos.y][pos.x] = m_stairsTiles.size() - 1;
 		break;
+
+	case Transition:
+		m_transitionTiles.push_back(TransitionTile(templateObject, tileSetHandler));
+		m_indexMatrix[pos.y][pos.x] = m_transitionTiles.size() - 1;
+		break;
 	default:
 		break;
 	}

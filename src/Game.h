@@ -88,6 +88,8 @@ protected:
 	TileMap& getTileMap(int z);
 	EntityLayer& getEntityLayer(int z);
 
+	void changeLevel();
+
 protected:
 	bool m_isRunning;
 

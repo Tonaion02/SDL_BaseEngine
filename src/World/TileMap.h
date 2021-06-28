@@ -40,6 +40,7 @@ public:
 	std::vector<ChestTile> m_chestTiles;
 	std::vector<OpenableTile> m_openableTiles;
 	std::vector<StairsTile> m_stairsTiles;
+	std::vector<TransitionTile> m_transitionTiles;
 	
 	std::vector<std::vector<uint16_t>> m_indexMatrix;
 

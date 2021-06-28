@@ -21,7 +21,8 @@ enum RealType
 	Destructble, //7
 	Chest, //8
 	Openable, //9
-	Stairs //10
+	Stairs, //10
+	Transition //11
 };
 
 
@@ -54,6 +55,7 @@ struct CommonTile
 		case Chest:
 		case Openable:
 		case Stairs:
+		case Transition:
 			return true;
 		}
 	}
@@ -72,6 +74,7 @@ struct CommonTile
 		case Grass:
 		case Ground:
 		case Stairs:
+		case Transition:
 			return true;
 		}
 	}
@@ -97,6 +100,7 @@ struct CommonTile
 		case Sea:
 		case Chest:
 		case Grass:
+		case Transition:
 			return false;
 
 		case Obstacle:

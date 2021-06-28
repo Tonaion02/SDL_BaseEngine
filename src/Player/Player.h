@@ -58,4 +58,7 @@ public:
 	Interaction interaction;
 
 	uint16_t lastZ;
+
+	bool changingLevel=false;
+	Delay delayChangingLevel;
 };

@@ -7,20 +7,20 @@
 //------------------------------------------------------------------------------------
 //World Class
 //------------------------------------------------------------------------------------
-bool World::loadLevel(const std::string& filePath, TileSetHandler& tileSetHandler)
+bool World::loadLevel(const std::string& nameLevel, TileSetHandler& tileSetHandler)
 {
-	s_indexLevels[filePath] = s_currentIndexLevels;
+	s_indexLevels[nameLevel] = s_currentIndexLevels;
 	s_currentIndexLevels++;
-	s_levels.push_back(Level(filePath, tileSetHandler));
+	s_levels.push_back(Level("data/levels/" + nameLevel, tileSetHandler));
 	return true;
 }
 
 
 
-uint16_t World::getIndexLevel(const std::string& filePath)
+uint16_t World::getIndexLevel(const std::string& nameLevel)
 {
 	//aggiungere assert per controllo
-	return s_indexLevels[filePath];
+	return s_indexLevels[nameLevel];
 }
 
 

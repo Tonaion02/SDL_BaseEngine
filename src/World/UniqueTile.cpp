@@ -166,3 +166,49 @@ StairsTile::StairsTile(const TemplateObject& templateObject, TileSetHandler& til
 //------------------------------------------------------------------------------------
 //StairsTile Struct
 //------------------------------------------------------------------------------------
+
+
+
+
+
+//------------------------------------------------------------------------------------
+//TransitionTile Struct
+//------------------------------------------------------------------------------------
+TransitionTile::TransitionTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler)
+{
+	Vector2i tileDim = tileSetHandler.getTileDimension();
+
+	Property property;
+	//Load property from templateObject
+	for (int i = 0; i < templateObject.properties.size(); i++)
+	{
+		property = templateObject.properties[i];
+
+		if (property.name == "nextLevelZ")
+		{
+			nextLevelZ = std::stoi(property.value);
+		}
+		else if (property.name == "tileset")
+		{
+			nameTileSet = property.value;
+		}
+		else if (property.name == "images")
+		{
+			idImage = std::stoi(property.value);
+		}
+		else if (property.name == "nextLevelPos")
+		{
+			std::vector<std::string> infoAboutLevelPos = split(property.value, ",");
+			nextLevelPos.x = std::stoi(infoAboutLevelPos[0]);
+			nextLevelPos.y = std::stoi(infoAboutLevelPos[1]);
+		}
+		else if (property.name == "nameLevel")
+		{
+			nameLevel = property.value;
+		}
+	}
+	//Load property from templateObject
+}
+//------------------------------------------------------------------------------------
+//TransitionTile Struct
+//------------------------------------------------------------------------------------

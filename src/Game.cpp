@@ -79,18 +79,53 @@ void Game::renderGraphics()
 
 
 
+void Game::changeLevel()
+{
+	for (int j = 0; j < s_player.nTile.y; j++)
+	{
+		for (int i = 0; i < s_player.nTile.x; i++)
+		{
+			CommonTile commonTile = currentLevel.m_tileMaps[s_player.z].getCommonTile(s_player.pos.x + i, s_player.pos.y + j, 0);
+
+			if (commonTile.realType == RealType::Transition)
+			{
+				TransitionTile tile = currentLevel.m_tileMaps[s_player.z].m_uniqueTileLayer.m_transitionTiles[
+					currentLevel.m_tileMaps[s_player.z].m_uniqueTileLayer.m_indexMatrix[s_player.pos.y + j][s_player.pos.x + i]];
+
+				s_player.z = tile.nextLevelZ;
+				s_player.lastZ = s_player.z;
+
+				s_player.pos = tile.nextLevelPos;
+				s_player.lastPos = tile.nextLevelPos;
+				s_player.changingLevel = false;
+				currentLevel = World::get().getLevel(World::get().getIndexLevel(tile.nameLevel));
+				s_player.posImage = { s_player.pos.x * currentLevel.getTileWidth(), s_player.pos.y * currentLevel.getTileHeight() };
+
+				statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status = GamePhase::StatusGamePhase::On;
+
+				return;
+			}
+		}
+	}
+}
+
+
+
+
+
 void Game::first()
 {
 	if (m_isFirst)
 	{
 		m_isFirst = false;
 
-		World::get().loadLevel("data/levels/Level5.tmx", entityTileSetHandler);
-		currentLevel = World::get().getLevel(World::get().getIndexLevel("data/levels/Level5.tmx"));
+		World::get().loadLevel("Level5.tmx", entityTileSetHandler);
+		World::get().loadLevel("Level6.tmx", entityTileSetHandler);
+		currentLevel = World::get().getLevel(World::get().getIndexLevel("Level6.tmx"));
 
 		s_player.rotateHitboxWithDirection = false;
 		//s_player.pos = Vector2i(50.0f, 50.0f );
-		s_player.pos = Vector2i(10.0f, 11.0f);
+		s_player.pos = Vector2i(50.0f, 11.0f);
 		s_player.lastPos = s_player.pos;
 		s_player.posImage = { s_player.pos.x * currentLevel.getTileWidth(), s_player.pos.y * currentLevel.getTileHeight() };
 		s_player.z = 0;
@@ -120,8 +155,8 @@ void Game::first()
 		//s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { currentLevel.getTileWidth(), 0 }));
 		//s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { -currentLevel.getTileWidth(), 0 }));
 
-		s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, -currentLevel.getTileHeight() }));
-		s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, currentLevel.getTileHeight() }));
+		s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, -currentLevel.getTileHeight() }));
+		s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, currentLevel.getTileHeight() }));
 		s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { currentLevel.getTileWidth(), 0 }));
 		s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { -currentLevel.getTileWidth(), 0 }));
 
@@ -131,6 +166,8 @@ void Game::first()
 		s_player.idStaticImage.push_back(6);
 
 		s_player.interactiveAnimation = StaticAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, s_player.pos);
+
+		s_player.delayChangingLevel = Delay(0.5f);
 
 		currentLevel.m_entityLayers[s_player.z].addPlayer(s_player.pos, s_player.nTile);
 
@@ -415,8 +452,20 @@ void Game::update()
 					}
 				}
 
-
 				s_player.lastZ = s_player.z;
+			}
+			if (s_player.changingLevel)
+			{
+				statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Exploring)).status = GamePhase::StatusGamePhase::Pause;
+				if (s_player.delayChangingLevel.isEnd())
+				{
+					Game::changeLevel();
+				}
+
+				//else
+				//{
+				//	s_player.delayChangingLevel.update(s_deltaTime);
+				//}
 			}
 			//Update Player
 
@@ -509,6 +558,15 @@ void Game::generateOutput()
 		//Exploring
 		if (actualPhase.phase == GamePhase::Phase::Exploring && statusActualPhase != GamePhase::StatusGamePhase::Off)
 		{
+			if (statusActualPhase == GamePhase::StatusGamePhase::Pause)
+			{
+				if (s_player.changingLevel)
+				{
+					Game::get().clearColorScreen(Color(0, 0, 0, 255));
+					renderGraphics();
+					return;
+				}
+			}
 			//Clear Screen
 			Game::get().clearColorScreen(Color(0, 255, 255, 255));
 			//Clear Screen
@@ -521,13 +579,7 @@ void Game::generateOutput()
 				currentLevel.getGraphicLayer(i, 0).blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
 				//Rendering First TileLayer
 
-				SDL_Log(" ");
-				SDL_Log("--------------------------------------------------------------");
-				std::string string = "backToRender.x: " + std::to_string(Camera::get().getBackToRender().x);
-				SDL_Log(string.c_str());
-				string = "frontToRender.x: " + std::to_string(Camera::get().getFrontToRender().x);
-				SDL_Log(string.c_str());
-				SDL_Log("--------------------------------------------------------------");
+
 
 				//Rendering UniqueTileLayer
 				for (int y = Camera::get().getBackToRender().y; y < Camera::get().getFrontToRender().y; y++)
@@ -574,6 +626,12 @@ void Game::generateOutput()
 							case Stairs:
 								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].idImage,
 									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].nameTileSet,
+									{ rendX, rendY });
+								break;
+
+							case Transition:
+								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].idImage,
+									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].nameTileSet,
 									{ rendX, rendY });
 								break;
 							default:

@@ -23,8 +23,6 @@ void Player::updateActivity(PlayerActivity activity)
 
 void Player::deReact(TileMap& tileMap)
 {
-	
-
 	for (int j = 0; j < nTile.y; j++)
 	{
 		for (int i = 0; i < nTile.x; i++)
@@ -39,7 +37,6 @@ void Player::deReact(TileMap& tileMap)
 				{
 				case Stairs:
 				{
-					//z = tileMap.m_uniqueTileLayer.m_stairsTiles[tileMap.m_uniqueTileLayer.m_indexMatrix[pos.y + j][pos.x + i]].z;
 					Direction lastDirectionMovement;
 
 					Vector2i p;
@@ -110,6 +107,11 @@ void Player::react(TileMap& tileMap)
 				{
 				case Stairs:
 					z = tileMap.m_uniqueTileLayer.m_stairsTiles[tileMap.m_uniqueTileLayer.m_indexMatrix[pos.y + j][pos.x + i]].z;
+					return;
+
+				case Transition:
+					changingLevel = true;
+					delayChangingLevel.start();
 					return;
 
 				default:
@@ -240,7 +242,7 @@ void Player::updatePlayer(float deltaTime, TileMap& tileMap, std::vector<std::ve
 			{
 				if (interaction.typeInteraction == TypeInteraction::WithTile)
 				{
-					CommonTile& tile = tileMap.getCommonTile(interaction.poses[i].x, interaction.poses[i].y, z);
+					CommonTile& tile = tileMap.getCommonTile(interaction.poses[i].x, interaction.poses[i].y, 0);
 
 					if (tile.isUnique())
 					{
@@ -282,18 +284,23 @@ void Player::updatePlayer(float deltaTime, TileMap& tileMap, std::vector<std::ve
 							break;
 						}
 					}
-
-					resetInteraction();
-					return;
 				}
 				else if (interaction.typeInteraction == TypeInteraction::WithNpc)
 				{
 
 				}
-
 			}
+
+			resetInteraction();
+			return;
 		}
 		//update interaction animation
+	}
+	
+	
+	if (changingLevel)
+	{
+		delayChangingLevel.update(deltaTime);
 	}
 }
 

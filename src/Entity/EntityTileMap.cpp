@@ -334,6 +334,8 @@ void Entity::update(float deltaTime, TileMap& tileMap, std::vector<std::vector<i
 		}
 	}
 
+
+
 	//Ho cambiato qua
 	if (statusMovement == StatusMovement::InMovement)
 	{

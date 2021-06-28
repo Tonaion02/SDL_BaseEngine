@@ -281,7 +281,7 @@
  <tile id="277" type="4"/>
  <tile id="278" type="4"/>
  <tile id="279" type="4"/>
- <tile id="280" type="4"/>
+ <tile id="280" type="11"/>
  <tile id="281" type="3"/>
  <tile id="282" type="3"/>
  <tile id="283" type="3"/>

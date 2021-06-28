@@ -86,3 +86,21 @@ struct StairsTile : public UniqueTile
 	uint16_t idImage;
 	uint16_t direction;
 };
+
+
+
+
+
+struct TransitionTile : public UniqueTile
+{
+	TransitionTile() : UniqueTile() {}
+	TransitionTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler);
+
+	std::string nameTileSet;
+	uint16_t idImage;
+
+	uint16_t nextLevelZ;
+	Vector2i nextLevelPos;
+
+	std::string nameLevel;
+};
