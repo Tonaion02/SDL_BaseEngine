@@ -23,6 +23,11 @@ public:
 		return Vector2f(this->x - other.x, this->y - other.y);
 	}
 
+	Vector2f operator*(float scalar)
+	{
+		return Vector2f(this->x * scalar, this->y * scalar);
+	}
+
 	float x, y;
 };
 
@@ -44,6 +49,11 @@ public:
 	Vector2i operator-(const Vector2i& other)
 	{
 		return Vector2i(this->x - other.x, this->y - other.y);
+	}
+
+	Vector2i operator*(float scalar)
+	{
+		return Vector2i(this->x * scalar, this->y * scalar);
 	}
 
 	int32_t x, y;

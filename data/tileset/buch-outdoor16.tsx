@@ -228,7 +228,7 @@
  <tile id="224" type="3"/>
  <tile id="225" type="3"/>
  <tile id="226" type="3"/>
- <tile id="227" type="3"/>
+ <tile id="227" type="5"/>
  <tile id="228" type="3"/>
  <tile id="229" type="4"/>
  <tile id="230" type="4"/>

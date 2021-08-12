@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<enemy>
+<enemy> 
+  <nameEntity name="nameEntity" value="Malese"/>
+  <nTileGraphics name="nTileGraphics" value="1,2"/>
   <nTile name="nTile" value="1,1"/>
+  <renderingAdjPos name="renderingAdjPos" value="0,-1"/>
+  <z name="z" value="0"/>
+  <idImage name="idStaticImage" value="0,3,9,6"/>
+  <tileSet name="tilesetEnemy" value="playerTileSet16.tsx"/>
+  <route name="routeSearchingBattle" value="2,2,2,2"/>
+  <condition name="withRoute" value="true"/>
+  <condition name="stop" value="false"/>
+  <condition name="rotateHibtoxWithDirection" value="false"/>
+  <delay name="delayNextStep" value="0.5f"/>
+  <delay name="delayChangingDirection" value="0.2f"/>
+  <direction name="lastDirection" value="2"/>
+  <viewDistance name="viewDistance" value="4"/>
+  <surface name="surface" value="0"/>
+  <velocity name="velocity" value="0"/>
+  <DinamicAnimation images="1,0,2" tileset="playerTileSet16.tsx" delay="0.2f" delayMovement="0.2f" space="0,-1" surface="0" velocity="0"/>
+  <DinamicAnimation images="4,3,5" tileset="playerTileSet16.tsx" delay="0.2f" delayMovement="0.2f" space="0,1" surface="0" velocity="0"/>
+  <DinamicAnimation images="10,9,11" tileset="playerTileSet16.tsx" delay="0.2f" delayMovement="0.2f" space="1,0" surface="0" velocity="0"/>
+  <DinamicAnimation images="7,6,8" tileset="playerTileSet16.tsx" delay="0.2f" delayMovement="0.2f" space="-1,0" surface="0" velocity="0"/>
+  <StaticAnimation name="allertingAnimation" images="4,3" tileset="playerTileSet16.tsx" delay="2.0f"/> 
 </enemy>

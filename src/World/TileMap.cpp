@@ -46,6 +46,8 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateO
 {
 	RealType realType;
 	
+
+
 	//Search the properties that reppresent the type of UniqueTile
 	for (int i = 0; i < templateObject.properties.size(); i++)
 	{
@@ -55,6 +57,8 @@ bool UniqueTileLayer::loadUniqueTileFromTemplate(const TemplateObject& templateO
 		}
 	}
 	//Search the properties that reppresent the type of UniqueTile
+
+
 
 	//Decide in base to the type of UniqueTile what UniqueTile create
 	switch (realType)

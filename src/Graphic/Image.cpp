@@ -232,9 +232,9 @@ void Image::setBlendMode(SDL_BlendMode blendMode)
 
 
 
-void Image::setAlpha(uint32_t alpha)
+void Image::setAlpha(float alpha)
 {
-	SDL_SetTextureAlphaMod(TextureHandler::get().getTexture(m_indexTexture).getRawTexture(), alpha);
+	SDL_SetTextureAlphaMod(TextureHandler::get().getTexture(m_indexTexture).getRawTexture(), alpha * 255);
 }
 //------------------------------------------------------------------------------------
 //Image Class

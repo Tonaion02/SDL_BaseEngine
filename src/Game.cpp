@@ -85,12 +85,12 @@ void Game::changeLevel()
 	{
 		for (int i = 0; i < s_player.nTile.x; i++)
 		{
-			CommonTile commonTile = currentLevel.m_tileMaps[s_player.z].getCommonTile(s_player.pos.x + i, s_player.pos.y + j, 0);
+			CommonTile commonTile = currentLevel->m_tileMaps[s_player.z].getCommonTile(s_player.pos.x + i, s_player.pos.y + j, 0);
 
 			if (commonTile.realType == RealType::Transition)
 			{
-				TransitionTile tile = currentLevel.m_tileMaps[s_player.z].m_uniqueTileLayer.m_transitionTiles[
-					currentLevel.m_tileMaps[s_player.z].m_uniqueTileLayer.m_indexMatrix[s_player.pos.y + j][s_player.pos.x + i]];
+				TransitionTile tile = currentLevel->m_tileMaps[s_player.z].m_uniqueTileLayer.m_transitionTiles[
+					currentLevel->m_tileMaps[s_player.z].m_uniqueTileLayer.m_indexMatrix[s_player.pos.y + j][s_player.pos.x + i]];
 
 				s_player.z = tile.nextLevelZ;
 				s_player.lastZ = s_player.z;
@@ -99,7 +99,7 @@ void Game::changeLevel()
 				s_player.lastPos = tile.nextLevelPos;
 				s_player.changingLevel = false;
 				currentLevel = World::get().getLevel(World::get().getIndexLevel(tile.nameLevel));
-				s_player.posImage = { s_player.pos.x * currentLevel.getTileWidth(), s_player.pos.y * currentLevel.getTileHeight() };
+				s_player.posImage = { s_player.pos.x * currentLevel->getTileWidth(), s_player.pos.y * currentLevel->getTileHeight() };
 
 				statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status = GamePhase::StatusGamePhase::On;
 
@@ -119,62 +119,80 @@ void Game::first()
 	{
 		m_isFirst = false;
 
+		TileSet tileSet = TileSet("data/tileset/playerTileSet16.tsx", 0, false);
+		entityTileSetHandler.addTileSet(tileSet);
+
 		World::get().loadLevel("Level5.tmx", entityTileSetHandler);
 		World::get().loadLevel("Level6.tmx", entityTileSetHandler);
 		currentLevel = World::get().getLevel(World::get().getIndexLevel("Level6.tmx"));
 
-		s_player.rotateHitboxWithDirection = false;
-		//s_player.pos = Vector2i(50.0f, 50.0f );
-		s_player.pos = Vector2i(50.0f, 11.0f);
+
+
+		//Test Font Loading and writing text to screen
+		FontHandler::get().loadFont("data/fonts/SourceCodePro-Black.ttf", 30);
+		text = TextRendering(FontHandler::get().getFontIndex("data/fonts/SourceCodePro-Black.ttf"));
+		text.update("wewe");
+		//Test Font Loading and writing text to screen
+
+
+
+		//s_player.rotateHitboxWithDirection = false;
+		s_player = Player("saveSlot0.tx", entityTileSetHandler);
+
+		s_player.pos = Vector2i(10.0f, 11.0f);
 		s_player.lastPos = s_player.pos;
-		s_player.posImage = { s_player.pos.x * currentLevel.getTileWidth(), s_player.pos.y * currentLevel.getTileHeight() };
+		s_player.posImage = { s_player.pos.x * currentLevel->getTileWidth(), s_player.pos.y * currentLevel->getTileHeight() };
 		s_player.z = 0;
 		s_player.lastZ = s_player.z;
 
 		statusHandler.addStatus(GamePhase(GamePhase::Phase::Exploring));
 		statusHandler.getStatus(statusHandler.searchStatus(GamePhase(GamePhase::Phase::Exploring))).status = GamePhase::StatusGamePhase::On;
 
-		TileSet tileSet = TileSet("data/tileset/playerTileSet16.tsx", 0, false);
-		entityTileSetHandler.addTileSet(tileSet);
+		s_player.tileDimension = { currentLevel->getTileWidth(), currentLevel->getTileHeight() };
 
-		s_player.tileDimension = { currentLevel.getTileWidth(), currentLevel.getTileHeight() };
-		
-		s_player.animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
-		s_player.animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
 
-		for (int i = 0; i < s_player.animations.size(); i++)
-		{
-			for (int j = 0; j < 2; j++)
-			{
-				s_player.animations[i].push_back(std::vector<DinamicAnimation>(0));
-			}
-		}
+		//s_player.animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
+		//s_player.animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
 
-		//s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, -currentLevel.getTileHeight() }));
-		//s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, currentLevel.getTileHeight() }));
-		//s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { currentLevel.getTileWidth(), 0 }));
-		//s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { -currentLevel.getTileWidth(), 0 }));
+		//for (int i = 0; i < s_player.animations.size(); i++)
+		//{
+		//	for (int j = 0; j < 2; j++)
+		//	{
+		//		s_player.animations[i].push_back(std::vector<DinamicAnimation>(0));
+		//	}
+		//}
 
-		s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, -currentLevel.getTileHeight() }));
-		s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, currentLevel.getTileHeight() }));
-		s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { currentLevel.getTileWidth(), 0 }));
-		s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { -currentLevel.getTileWidth(), 0 }));
+		////s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, -currentLevel->getTileHeight() }));
+		////s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { 0, currentLevel->getTileHeight() }));
+		////s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { currentLevel->getTileWidth(), 0 }));
+		////s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.6f, s_player.pos, 0.6f, { -currentLevel->getTileWidth(), 0 }));
 
-		s_player.idStaticImage.push_back(0);
-		s_player.idStaticImage.push_back(3);
-		s_player.idStaticImage.push_back(9);
-		s_player.idStaticImage.push_back(6);
+		//s_player.animations[0][0].push_back(DinamicAnimation({ 1, 0, 2 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, -currentLevel->getTileHeight() }));
+		//s_player.animations[0][0].push_back(DinamicAnimation({ 4, 3, 5 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { 0, currentLevel->getTileHeight() }));
+		//s_player.animations[0][0].push_back(DinamicAnimation({ 10, 9, 11 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { currentLevel->getTileWidth(), 0 }));
+		//s_player.animations[0][0].push_back(DinamicAnimation({ 7, 6, 8 }, "playerTileSet16.tsx", 0.2f, s_player.pos, 0.2f, { -currentLevel->getTileWidth(), 0 }));
 
-		s_player.interactiveAnimation = StaticAnimation({ 0, 0 }, "playerTileSet16.tsx", 0.2f, s_player.pos);
+		//s_player.idStaticImage.push_back(0);
+		//s_player.idStaticImage.push_back(3);
+		//s_player.idStaticImage.push_back(9);
+		//s_player.idStaticImage.push_back(6);
+
+		//s_player.interactiveAnimation = StaticAnimation({ 71, 72 }, "playerTileSet16.tsx", 0.2f, s_player.pos);
 
 		s_player.delayChangingLevel = Delay(0.5f);
 
-		currentLevel.m_entityLayers[s_player.z].addPlayer(s_player.pos, s_player.nTile);
+		//s_player.nTileGraphics = { 1, 2 };
+		//s_player.renderingAdjPos = { 0, -1 };
+		//s_player.nTile = { 1, 1 };
+
+		currentLevel->m_entityLayers[s_player.z].addPlayer(s_player.pos, s_player.nTile);
 
 		s_ticksCount = 0;
 
+
+
 		//Init Camera
-		Camera::get().init({ currentLevel.getTileWidth(), currentLevel.getTileHeight() }, { currentLevel.getWidth(), currentLevel.getHeight() });
+		Camera::get().init({ currentLevel->getTileWidth(), currentLevel->getTileHeight() }, { currentLevel->getWidth(), currentLevel->getHeight() });
 		//Init Camera
 
 
@@ -182,49 +200,49 @@ void Game::first()
 		//Init Test Npc
 		//Npc testNpc = Npc();
 		//testNpc.pos = { 5, 3 };
-		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel->getTileWidth(), testNpc.pos.y * currentLevel->getTileHeight() };
 		//testNpc.nTile = { 2, 2 };
 		//testNpc.animations = entity.animations;
 		//testNpc.idStaticImage = entity.idStaticImage;
 		//testNpc.nameTileSet = entity.nameTileSet;
 		//testNpc.tileDimension = entity.tileDimension;
-		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+		//currentLevel->m_entityLayers[entity.z].add(testNpc);
 
 
 
 		//testNpc = Npc();
 		//testNpc.pos = { 9, 3 };
-		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel->getTileWidth(), testNpc.pos.y * currentLevel->getTileHeight() };
 		//testNpc.nTile = { 2, 2 };
 		//testNpc.animations = entity.animations;
 		//testNpc.idStaticImage = entity.idStaticImage;
 		//testNpc.nameTileSet = entity.nameTileSet;
 		//testNpc.tileDimension = entity.tileDimension;
-		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+		//currentLevel->m_entityLayers[entity.z].add(testNpc);
 
 
 
 		//testNpc = Npc();
 		//testNpc.pos = { 6, 1 };
-		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel->getTileWidth(), testNpc.pos.y * currentLevel->getTileHeight() };
 		//testNpc.nTile = { 2, 2 };
 		//testNpc.animations = entity.animations;
 		//testNpc.idStaticImage = entity.idStaticImage;
 		//testNpc.nameTileSet = entity.nameTileSet;
 		//testNpc.tileDimension = entity.tileDimension;
-		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+		//currentLevel->m_entityLayers[entity.z].add(testNpc);
 
 
 
 		//testNpc = Npc();
 		//testNpc.pos = { 7, 5 };
-		//testNpc.posImage = { testNpc.pos.x * currentLevel.getTileWidth(), testNpc.pos.y * currentLevel.getTileHeight() };
+		//testNpc.posImage = { testNpc.pos.x * currentLevel->getTileWidth(), testNpc.pos.y * currentLevel->getTileHeight() };
 		//testNpc.nTile = { 2, 2 };
 		//testNpc.animations = entity.animations;
 		//testNpc.idStaticImage = entity.idStaticImage;
 		//testNpc.nameTileSet = entity.nameTileSet;
 		//testNpc.tileDimension = entity.tileDimension;
-		//currentLevel.m_entityLayers[entity.z].add(testNpc);
+		//currentLevel->m_entityLayers[entity.z].add(testNpc);
 		//Init Test Npc
 
 
@@ -233,8 +251,12 @@ void Game::first()
 		Enemy testEnemy = Enemy();
 		testEnemy.z = s_player.z;
 		testEnemy.pos = { 12, 3 };
-		testEnemy.posImage = { testEnemy.pos.x * currentLevel.getTileWidth(), testEnemy.pos.y * currentLevel.getTileHeight() };
+		testEnemy.posImage = { testEnemy.pos.x * currentLevel->getTileWidth(), testEnemy.pos.y * currentLevel->getTileHeight() };
 		testEnemy.nTile = { 2, 2 };
+
+		testEnemy.nTileGraphics = { 2, 2 };
+		testEnemy.renderingAdjPos = { 0, 0 };
+
 		testEnemy.animations = s_player.animations;
 		testEnemy.idStaticImage = s_player.idStaticImage;
 		testEnemy.nameTileSet = s_player.nameTileSet;
@@ -264,12 +286,17 @@ void Game::first()
 
 		testEnemy.route = Route(steps);
 		testEnemy.withRoute = true;
-		testEnemy.stop = true;
+		testEnemy.stop = false;
 
 		testEnemy.delayNextStep = Delay(0.5f);
 
-		currentLevel.m_entityLayers[s_player.z].add(testEnemy);
+		//currentLevel->m_entityLayers[s_player.z].add(testEnemy, entityTileSetHandler);
 		//Init Test Enemy
+
+
+		//Init test BattleHandler
+		
+		//Init test BattleHandler
 	}
 }
 
@@ -302,9 +329,6 @@ void Game::processInput()
 	{
 		m_isRunning = false;
 	}
-
-	//SDL_Log(std::to_string(InputHandler::get().getPos().x).c_str());
-	//SDL_Log(std::to_string(InputHandler::get().isMousePressed(2)).c_str());
 }
 
 
@@ -326,29 +350,44 @@ void Game::update()
 			{
 				//Verify if an Entity see the Player
 				int indexEnemy = -1;
-				for (auto& cEnemy : currentLevel.m_entityLayers[s_player.z].m_enemies)
+				for (auto& cEnemy : currentLevel->m_entityLayers[s_player.z].m_enemies)
 				{
 					indexEnemy++;
-					if (s_player.statusMovement == StatusMovement::Lock)
+
+					//if (s_player.statusMovement == StatusMovement::Lock)
+					//{
+					//	if (cEnemy.statusMovement == StatusMovement::Lock && cEnemy.statusFighting == StatusFighting::Alive && cEnemy.currentActivity == ActivityEnemy::Exploring)
+					//	{
+					//		if (cEnemy.detectPlayer(currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities))
+					//		{
+					//			cEnemy.currentActivity = ActivityEnemy::Allerting;
+					//			cEnemy.allertingAnimation.setPos({ cEnemy.posImage.x, cEnemy.posImage.y - cEnemy.tileDimension.y });
+					//			cEnemy.allertingAnimation.start();
+
+					//			currentEnemy = indexEnemy;
+					//			zCurrentEnemy = cEnemy.z;
+
+					//			GamePhase battlePhase = GamePhase(GamePhase::Phase::Battle);
+					//			battlePhase.status = GamePhase::StatusGamePhase::Off;
+					//			statusHandler.addStatus(battlePhase);
+					//			statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status = GamePhase::StatusGamePhase::Pause;
+					//		}
+					//	}
+					//}
+
+					if (cEnemy.detectPlayer(currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities))
 					{
-						if (cEnemy.statusMovement == StatusMovement::Lock && cEnemy.statusFighting == StatusFighting::Alive && cEnemy.currentActivity == ActivityEnemy::Exploring)
-						{
-							if (cEnemy.detectPlayer(currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities))
-							{
-								SDL_Log("heyyyyyyyy");
-								cEnemy.currentActivity = ActivityEnemy::Allerting;
-								cEnemy.allertingAnimation.setPos({ cEnemy.posImage.x, cEnemy.posImage.y - cEnemy.tileDimension.y });
-								cEnemy.allertingAnimation.start();
+						cEnemy.currentActivity = ActivityEnemy::Allerting;
+						cEnemy.allertingAnimation.setPos({ cEnemy.posImage.x, cEnemy.posImage.y - cEnemy.tileDimension.y });
+						cEnemy.allertingAnimation.start();
 
-								currentEnemy = indexEnemy;
-								zCurrentEnemy = cEnemy.z;
+						currentEnemy = indexEnemy;
+						zCurrentEnemy = cEnemy.z;
 
-								GamePhase battlePhase = GamePhase(GamePhase::Phase::Battle);
-								battlePhase.status = GamePhase::StatusGamePhase::Off;
-								statusHandler.addStatus(battlePhase);
-								statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status = GamePhase::StatusGamePhase::Pause;
-							}
-						}
+						GamePhase battlePhase = GamePhase(GamePhase::Phase::Battle);
+						battlePhase.status = GamePhase::StatusGamePhase::Off;
+						statusHandler.addStatus(battlePhase);
+						statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status = GamePhase::StatusGamePhase::Pause;
 					}
 				}
 				//Verify if an Entity see the Player
@@ -368,23 +407,23 @@ void Game::update()
 					{
 						if (InputHandler::get().isPressed(SDL_SCANCODE_W))
 						{
-							s_player.startMove(Direction::Up, currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+							s_player.startMove(Direction::Up, currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 						}
 						else if (InputHandler::get().isPressed(SDL_SCANCODE_S))
 						{
-							s_player.startMove(Direction::Down, currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+							s_player.startMove(Direction::Down, currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 						}
 						else if (InputHandler::get().isPressed(SDL_SCANCODE_D))
 						{
-							s_player.startMove(Direction::Right, currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+							s_player.startMove(Direction::Right, currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 						}
 						else if (InputHandler::get().isPressed(SDL_SCANCODE_A))
 						{
-							s_player.startMove(Direction::Left, currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+							s_player.startMove(Direction::Left, currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 						}
 						else if (InputHandler::get().isPressed(SDL_SCANCODE_B))
 						{
-							s_player.tryToInteract(currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+							s_player.tryToInteract(currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 						}
 					}
 				}
@@ -403,16 +442,16 @@ void Game::update()
 					&& statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Battle)).status == GamePhase::StatusGamePhase::Off)
 				{
 					//Aggiungere controllo se ha terminato l'animazione il player
-					if (currentLevel.m_entityLayers[s_player.z].m_enemies[currentEnemy].currentActivity == ActivityEnemy::Fighting)
+					if (currentLevel->m_entityLayers[s_player.z].m_enemies[currentEnemy].currentActivity == ActivityEnemy::Fighting)
 					{
 						statusHandler.getStatus(indexPhase).status = GamePhase::StatusGamePhase::Off;
 						statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Battle)).status = GamePhase::StatusGamePhase::On;
 					}
 					else
 					{
-						currentLevel.m_entityLayers[zCurrentEnemy].m_enemies[currentEnemy].updateEnemy(s_deltaTime, 
-							currentLevel.m_tileMaps[zCurrentEnemy], 
-							currentLevel.m_entityLayers[zCurrentEnemy].m_idEntities);
+						currentLevel->m_entityLayers[zCurrentEnemy].m_enemies[currentEnemy].updateEnemy(s_deltaTime, 
+							currentLevel->m_tileMaps[zCurrentEnemy], 
+							currentLevel->m_entityLayers[zCurrentEnemy].m_idEntities);
 					}
 				}
 				//Verify when is terminated the animation of player or entity after starting of battle
@@ -423,20 +462,19 @@ void Game::update()
 
 			//Execute in any case
 			//Update Player
-			s_player.updatePlayer(s_deltaTime, currentLevel.m_tileMaps[s_player.z], currentLevel.m_entityLayers[s_player.z].m_idEntities);
+			s_player.updatePlayer(s_deltaTime, currentLevel->m_tileMaps[s_player.z], currentLevel->m_entityLayers[s_player.z].m_idEntities);
 			if (s_player.z != s_player.lastZ)
 			{
-				idEntity id = currentLevel.m_entityLayers[s_player.lastZ].m_idEntities[s_player.pos.y][s_player.pos.x];
+				idEntity id = currentLevel->m_entityLayers[s_player.lastZ].m_idEntities[s_player.pos.y][s_player.pos.x];
 
 				//Clear other cells
-
 				for (int j = 0; j < s_player.nTile.y; j++)
 				{
 					for (int i = 0; i < s_player.nTile.x; i++)
 					{
 						Vector2i p = { s_player.pos.x + i, s_player.pos.y + j };
 
-						currentLevel.m_entityLayers[s_player.lastZ].m_idEntities[p.y][p.x] = 
+						currentLevel->m_entityLayers[s_player.lastZ].m_idEntities[p.y][p.x] = 
 							idEntity(TypeEntity::NoneTypeEntity, -1);
 					}
 				}
@@ -448,7 +486,7 @@ void Game::update()
 					{
 						Vector2i p = { s_player.pos.x + i, s_player.pos.y + j };
 
-						currentLevel.m_entityLayers[s_player.z].m_idEntities[p.y][p.x] = id;
+						currentLevel->m_entityLayers[s_player.z].m_idEntities[p.y][p.x] = id;
 					}
 				}
 
@@ -481,11 +519,11 @@ void Game::update()
 			if (statusHandler.searchStatus(GamePhase::Phase::Exploring) != -1
 				&& statusHandler.getStatus(statusHandler.searchStatus(GamePhase::Phase::Exploring)).status == GamePhase::StatusGamePhase::On)
 			{
-				for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
+				for (int z = 0; z < currentLevel->m_tileMaps.size(); z++)
 				{
-					for (auto& cEnemy : currentLevel.m_entityLayers[z].m_enemies)
+					for (auto& cEnemy : currentLevel->m_entityLayers[z].m_enemies)
 					{
-						cEnemy.takeDecision(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+						cEnemy.takeDecision(s_deltaTime, currentLevel->m_tileMaps[z], currentLevel->m_entityLayers[z].m_idEntities);
 					}
 				}
 			}
@@ -494,11 +532,11 @@ void Game::update()
 
 
 			//Update Npc
-			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
+			for (int z = 0; z < currentLevel->m_tileMaps.size(); z++)
 			{
-				for (auto& cNpc : currentLevel.m_entityLayers[z].m_npcs)
+				for (auto& cNpc : currentLevel->m_entityLayers[z].m_npcs)
 				{
-					cNpc.update(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+					cNpc.update(s_deltaTime, currentLevel->m_tileMaps[z], currentLevel->m_entityLayers[z].m_idEntities);
 				}
 			}
 			//Update Npc
@@ -506,14 +544,20 @@ void Game::update()
 
 
 			//Update Enemy
-			for (int z = 0; z < currentLevel.m_tileMaps.size(); z++)
+			for (int z = 0; z < currentLevel->m_tileMaps.size(); z++)
 			{
-				for (auto& cEnemy : currentLevel.m_entityLayers[z].m_enemies)
+				for (auto& cEnemy : currentLevel->m_entityLayers[z].m_enemies)
 				{
-					cEnemy.updateEnemy(s_deltaTime, currentLevel.m_tileMaps[z], currentLevel.m_entityLayers[z].m_idEntities);
+					cEnemy.updateEnemy(s_deltaTime, currentLevel->m_tileMaps[z], currentLevel->m_entityLayers[z].m_idEntities);
 				}
 			}
 			//Update Enemy
+
+
+
+			//Update Debug Layer
+			text.update("x: " + std::to_string(s_player.pos.x) + " y: " + std::to_string(s_player.pos.y));
+			//Update Debug Layer
 		}
 		//Exploring
 
@@ -525,12 +569,26 @@ void Game::update()
 			if (statusActualPhase == GamePhase::StatusGamePhase::Pause)
 			{
 				//Attendere che finiscano le animazioni in exploring(oppure no)
-				
 			}
 			else if (statusActualPhase == GamePhase::StatusGamePhase::On)
 			{
 				//Battle vera e propria
-				SDL_Log("BATTLE!!!!!!!!!!");
+				SDL_Log("!!!!!!!!!BATTLE!!!!!!!!!");
+
+				if (BattleHandler::get().s_firstBattle)
+				{
+					BattleHandler::get().s_gTileSetHandler.loadTileSet("data/images/1.png", { 20, 20 });
+
+					BattleHandler::get().s_firstBattle = false;
+
+					BattleHandler::get().createRectangleParticle(s_deltaTime, "data/images/1.png", AABBbox({ 20.0f, 20.0f }, { 20, 20 }, 1.0f),
+						Stats(10.0f, 10.0f, 10.0f), { 1.0f, 0.0f }, BattleHandler::Categories::Player);
+
+					BattleHandler::get().createStasticRectangleWalls("data/images/1.png", AABBbox({ 60.0f, 20.0f }, { 20, 20 }, 1.0f), 
+						Stats(10.0f, 10.0f, 10.0f));
+				}
+
+				BattleHandler::get().update(s_deltaTime);
 			}
 			else if (statusActualPhase == GamePhase::StatusGamePhase::Off)
 			{
@@ -542,6 +600,13 @@ void Game::update()
 
 
 		//Dialoging
+		else if (actualPhase.phase == GamePhase::Phase::Dialoging)
+		{
+			if (statusActualPhase == GamePhase::StatusGamePhase::On)
+			{
+
+			}
+		}
 		//Dialoging
 	}
 }
@@ -567,33 +632,113 @@ void Game::generateOutput()
 					return;
 				}
 			}
+
+
+
 			//Clear Screen
 			Game::get().clearColorScreen(Color(0, 255, 255, 255));
 			//Clear Screen
 
-			//Rendering currentLevel
-			for (int i = 0; i < currentLevel.m_tileMaps.size(); i++)
+
+
+			//Rendering currentLevel->
+			for (int i = 0; i < currentLevel->m_tileMaps.size(); i++)
 			{
 				//Rendering First TileLayer
-				//currentLevel.m_graphicLayer[i][0].blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
-				currentLevel.getGraphicLayer(i, 0).blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
+				currentLevel->getGraphicLayer(i, 0).blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
 				//Rendering First TileLayer
 
 
 
-				//Rendering UniqueTileLayer
+				//Rendering First Layer of UniqueTileLayer
 				for (int y = Camera::get().getBackToRender().y; y < Camera::get().getFrontToRender().y; y++)
 				{
-					int rendY = (y * currentLevel.getTileHeight()) - Camera::get().getStartRectRendering().y;
+					int rendY = (y * currentLevel->getTileHeight()) - Camera::get().getStartRectRendering().y;
 					for (int x = Camera::get().getBackToRender().x; x < Camera::get().getFrontToRender().x; x++)
 					{
-						int rendX = (x * currentLevel.getTileWidth()) - Camera::get().getStartRectRendering().x;
-						//Momentaneo
+						int rendX = (x * currentLevel->getTileWidth()) - Camera::get().getStartRectRendering().x;
 						//Verify if is unique a CommonTile
-						RealType realType = currentLevel.m_tileMaps[i].getCommonTile(x, y, 0).realType;
-						if (currentLevel.m_tileMaps[i].getCommonTile(x, y, 0).isUnique())
+						RealType realType = currentLevel->m_tileMaps[i].getCommonTile(x, y, 0).realType;
+						if (currentLevel->m_tileMaps[i].getCommonTile(x, y, 0).isUnique())
 						{
-							int index = currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_indexMatrix[y][x];
+							int index = currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_indexMatrix[y][x];
+							//Select the type of UniqueTile
+							switch (realType)
+							{
+							case Destructble:
+								currentLevel->m_tileSetHandler.blitImageTile(currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].getCurrentImage(),
+									currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].nameTileset,
+									{ rendX, rendY });
+								break;
+							case Chest:
+								currentLevel->m_tileSetHandler.blitImageTile(currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_chestTiles[index].getCurrentImage(),
+									currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_chestTiles[index].nameTileSet,
+									{ rendX, rendY });
+								break;
+							case Openable:
+								break;
+							case Stairs:
+								currentLevel->m_tileSetHandler.blitImageTile(currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].idImage,
+									currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].nameTileSet,
+									{ rendX, rendY });
+								break;
+
+							case Transition:
+								currentLevel->m_tileSetHandler.blitImageTile(currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].idImage,
+									currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].nameTileSet,
+									{ rendX, rendY });
+								break;
+							default:
+								break;
+							}
+							//Select the type of UniqueTile
+						}
+						//Verify if is unique a CommonTile
+					}
+				}
+				//Rendering First Layer of UniqueTileLayer
+
+
+
+				//Render Player
+				if (s_player.z == i)
+				{
+					s_player.renderPlayer(Camera::get().getPlayerPos(), entityTileSetHandler);
+				}
+				//Render Player
+
+
+
+				//Render Npc
+				for (auto cNpc : currentLevel->m_entityLayers[i].m_npcs)
+				{
+					cNpc.renderNpc(Camera::get().getPosInProspective(cNpc.posImage), entityTileSetHandler);
+				}
+				//Render Npc
+
+
+
+				//Render Npc
+				for (auto cEnemy : currentLevel->m_entityLayers[i].m_enemies)
+				{
+					cEnemy.renderEnemy(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
+				}
+				//Render Npc
+
+
+
+				//Rendering Last Layer of UniqueTileLayer
+				for (int y = Camera::get().getBackToRender().y; y < Camera::get().getFrontToRender().y; y++)
+				{
+					int rendY = (y * currentLevel->getTileHeight()) - Camera::get().getStartRectRendering().y;
+					for (int x = Camera::get().getBackToRender().x; x < Camera::get().getFrontToRender().x; x++)
+					{
+						int rendX = (x * currentLevel->getTileWidth()) - Camera::get().getStartRectRendering().x;
+						//Verify if is unique a CommonTile
+						RealType realType = currentLevel->m_tileMaps[i].getCommonTile(x, y, 0).realType;
+						if (currentLevel->m_tileMaps[i].getCommonTile(x, y, 0).isUnique())
+						{
+							int index = currentLevel->m_tileMaps[i].m_uniqueTileLayer.m_indexMatrix[y][x];
 							//Select the type of UniqueTile
 							switch (realType)
 							{
@@ -611,71 +756,35 @@ void Game::generateOutput()
 								break;
 							case Grass:
 								break;
-							case Destructble:
-								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].getCurrentImage(),
-									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_destructbleTiles[index].nameTileset,
-									{ rendX, rendY });
-								break;
-							case Chest:
-								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_chestTiles[index].getCurrentImage(),
-									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_chestTiles[index].nameTileSet,
-									{ rendX, rendY });
-								break;
-							case Openable:
-								break;
-							case Stairs:
-								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].idImage,
-									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_stairsTiles[index].nameTileSet,
-									{ rendX, rendY });
-								break;
 
-							case Transition:
-								currentLevel.m_tileSetHandler.blitImageTile(currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].idImage,
-									currentLevel.m_tileMaps[i].m_uniqueTileLayer.m_transitionTiles[index].nameTileSet,
-									{ rendX, rendY });
-								break;
 							default:
 								break;
 							}
 							//Select the type of UniqueTile
 						}
 						//Verify if is unique a CommonTile
-						//Momentaneo
 					}
 				}
-				//Rendering UniqueTileLayer
+				//Rendering Last Layer of UniqueTileLayer
 
-				//Render Player
-				if (s_player.z == i)
-				{
-					s_player.render(Camera::get().getPlayerPos(), entityTileSetHandler);
-				}
-				//Render Player
 
-				//Render Npc
-				for (auto cNpc : currentLevel.m_entityLayers[i].m_npcs)
-				{
-					cNpc.renderNpc(Camera::get().getPosInProspective(cNpc.posImage), entityTileSetHandler);
-				}
-				//Render Npc
-
-				//Render Npc
-				for (auto cEnemy : currentLevel.m_entityLayers[i].m_enemies)
-				{
-					//cEnemy.render(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
-					cEnemy.renderEnemy(Camera::get().getPosInProspective(cEnemy.posImage), entityTileSetHandler);
-				}
-				//Render Npc
 
 				//Rendering Other TileLayer
-				for (int j = 1; j < currentLevel.m_graphicLayer[i].size(); j++)
+				for (int j = 1; j < currentLevel->m_graphicLayer[i].size(); j++)
 				{
-					//currentLevel.m_graphicLayer[i][j].blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
-					currentLevel.getGraphicLayer(i, j).blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
+					currentLevel->getGraphicLayer(i, j).blit({ 0, 0 }, Camera::get().getStartRectRendering(), screenDimension);
 				}
 				//Rendering Other TileLayer
 			}
 			//Rendering currentLevel
+
+
+
+			//Rendering Text to Screen
+			text.blit({ 0, 0 });
+			//Rendering Text to Screen
+
+
 
 			//Render Image
 			renderGraphics();
@@ -693,7 +802,13 @@ void Game::generateOutput()
 				//Clear Screen
 				Game::get().clearColorScreen(Color(0, 0, 0, 0));
 				//Clear Screen
+
+
 				
+				BattleHandler::get().draw();
+
+
+
 				//Render Image
 				renderGraphics();
 				//Render Image

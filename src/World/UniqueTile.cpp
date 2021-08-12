@@ -66,7 +66,44 @@ uint16_t DestructbleTile::getCurrentImage()
 //------------------------------------------------------------------------------------
 OpenableTile::OpenableTile(const TemplateObject& templateObject, TileSetHandler& tileSetHandler)
 {
+	Vector2i tileDim = tileSetHandler.getTileDimension();
 
+	Property property;
+	//Load property from templateObject
+	for (int i = 0; i < templateObject.properties.size(); i++)
+	{
+		property = templateObject.properties[i];
+
+		if (property.name == "opened")
+		{
+			isOpened = fromStringToBool(property.value);
+		}
+		else if (property.name == "tileset")
+		{
+			nameTileSet = property.value;
+		}
+		else if (property.name == "images")
+		{
+			std::vector<std::string> infoAboutImages = split(property.value, ",");
+
+			for (int j = 0; j < infoAboutImages.size(); j++)
+			{
+				idImages[j] = (uint16_t)std::stoi(infoAboutImages[j]);
+			}
+		}
+	}
+	//Load property from templateObject
+}
+
+
+
+uint16_t OpenableTile::getCurrentImage()
+{
+	if (isOpened)
+	{
+		return idImages[0];
+	}
+	return idImages[1];
 }
 //------------------------------------------------------------------------------------
 //OpenableTile Struct
@@ -162,7 +199,6 @@ StairsTile::StairsTile(const TemplateObject& templateObject, TileSetHandler& til
 	}
 	//Load property from templateObject
 }
-
 //------------------------------------------------------------------------------------
 //StairsTile Struct
 //------------------------------------------------------------------------------------

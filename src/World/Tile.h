@@ -23,6 +23,7 @@ enum RealType
 	Openable, //9
 	Stairs, //10
 	Transition //11
+	//Respawning
 };
 
 

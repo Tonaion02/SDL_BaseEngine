@@ -41,10 +41,11 @@ struct Player : public Entity
 {
 public:
 	Player() :currentActivity(PlayerActivity::PlayerExploring) {}
-	Player(const std::string& filePath);
+	Player(const std::string& saveSlot, TileSetHandler& entityTileSet);
 
 	virtual void updateActivity(PlayerActivity activity);
 	virtual void updatePlayer(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
+	virtual void startInteraction(const Vector2i& p);
 	virtual void tryToInteract(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities);
 	virtual void react(TileMap& tileMap) override;
 	virtual void deReact(TileMap& tileMap) override;

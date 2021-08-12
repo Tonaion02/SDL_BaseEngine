@@ -26,7 +26,7 @@ EntityLayer::EntityLayer(uint16_t width, uint16_t height)
 
 
 
-void EntityLayer::add(Npc& npc)
+void EntityLayer::add(Npc& npc, TileSetHandler& tileSetHandler)
 {
 	m_npcs.push_back(npc);
 	int index = m_npcs.size() - 1;
@@ -43,7 +43,7 @@ void EntityLayer::add(Npc& npc)
 
 
 
-void EntityLayer::add(Enemy& enemy)
+void EntityLayer::add(Enemy& enemy, TileSetHandler& tileSetHandler)
 {
 	m_enemies.push_back(enemy);
 	int index = m_enemies.size() - 1;
@@ -112,17 +112,22 @@ bool EntityLayer::loadEntityFromTemplate(const TemplateObject& templateObject, c
 	}
 	case npc:
 	{
-		Npc npc = Npc(nameEntity);
+		Npc npc = Npc(nameEntity, tileSetHandler);
 		npc.pos = pos;
-		add(npc);
+		add(npc, tileSetHandler);
 		break;
 	}
 
 	case enemy:
 	{
-		Enemy enemy = Enemy(nameEntity);
+		Enemy enemy = Enemy(nameEntity, tileSetHandler);
 		enemy.pos = pos;
-		//add(enemy);
+		enemy.posImage = { pos.x * enemy.tileDimension.x, pos.y * enemy.tileDimension.y };
+		enemy.lastPos = pos;
+		enemy.currentActivity = ActivityEnemy::Exploring;
+		enemy.statusFighting = StatusFighting::Alive;
+
+		add(enemy, tileSetHandler);
 		break;
 	}
 

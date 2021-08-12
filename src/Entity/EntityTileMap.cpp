@@ -21,24 +21,46 @@ Direction reverseDirection(Direction direction)
 
 
 
-bool Entity::isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities)
+//bool Entity::isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities)
+//{
+//	return (idEntities[p.y][p.x].index != id.index || idEntities[p.y][p.x].typeEntity != id.typeEntity) && idEntities[p.y][p.x].typeEntity != TypeEntity::NoneTypeEntity;
+//}
+//
+//
+//
+//int Entity::getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
+//{
+//	return idEntities[p.y][p.x].index;
+//}
+//
+//
+//
+//idEntity Entity::getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
+//{
+//	return idEntities[p.y][p.x];
+//}
+
+
+
+bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities)
 {
 	return (idEntities[p.y][p.x].index != id.index || idEntities[p.y][p.x].typeEntity != id.typeEntity) && idEntities[p.y][p.x].typeEntity != TypeEntity::NoneTypeEntity;
 }
 
 
 
-int Entity::getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
+int getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
 {
 	return idEntities[p.y][p.x].index;
 }
 
 
 
-idEntity Entity::getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
+idEntity getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities)
 {
 	return idEntities[p.y][p.x];
 }
+
 
 
 
@@ -198,15 +220,45 @@ void Entity::updateDirection(Direction direction)
 
 
 
-bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const
+bool Entity::isInLimit(const Vector2i& t, const TileMap& tileMap) const 
 {
-	//Controllo vero e proprio
-	//Controllo sulle dimensioni della TileMap
 	if (t.x < 0 || t.x + (nTile.x - 1) >= tileMap.getMaxWidth())
 	{
 		return false;
 	}
 	if (t.y < 0 || t.y + (nTile.y - 1) >= tileMap.getMaxHeight())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+
+bool Entity::isWithouthEntity(const Vector2i& t, const std::vector<std::vector<idEntity>>& idEntities) const
+{
+	for (int j = 0; j < nTile.y; j++)
+	{
+		for (int i = 0; i < nTile.x; i++)
+		{
+			if (isOccupied({ t.x + i, t.y + j }, getIdEntity({ pos.x + i, pos.y + j }, idEntities), idEntities))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+
+bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const
+{
+	//Controllo vero e proprio
+	//Controllo sulle dimensioni della TileMap
+	if (!this->isInLimit(t, tileMap))
 	{
 		return false;
 	}
@@ -234,6 +286,13 @@ bool Entity::controllPosition(const Vector2i& t, const TileMap& tileMap, const s
 					break;
 				case Chest:
 					return false;
+					break;
+
+				case Openable:
+					if (!tileMap.m_uniqueTileLayer.m_openableTiles[tileMap.m_uniqueTileLayer.m_indexMatrix[p.y][p.x]].isOpened)
+					{
+						return false;
+					}
 					break;
 				}
 			}
@@ -408,12 +467,15 @@ void Entity::deReact(TileMap& tileMap)
 
 void Entity::render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const
 {
-	for (int j = 0; j < nTile.y; j++)
+	for (int j = 0; j < nTileGraphics.y; j++)
 	{
-		for (int i = 0; i < nTile.x; i++)
+		for (int i = 0; i < nTileGraphics.x; i++)
 		{
-			int addIdImage = ((j) * tileSetHandler.getTileSet(nameTileSet).getColumns()) + i;
-			Vector2i p = { posInProspective.x + (i*tileDimension.x), posInProspective.y + (j*tileDimension.y) };
+			int addIdImage = ((j)* tileSetHandler.getTileSet(nameTileSet).getColumns()) + i;
+
+			Vector2i p = { posInProspective.x + (i*tileDimension.x) + (renderingAdjPos.x*tileDimension.x),
+				posInProspective.y + (j*tileDimension.y) + (renderingAdjPos.y*tileDimension.y) };
+
 			tileSetHandler.getTileSet(nameTileSet).blitImageTile(getIdImage() + addIdImage, p);
 		}
 	}
@@ -429,7 +491,7 @@ void Entity::render(const Vector2i& posInProspective, const TileSetHandler& tile
 //------------------------------------------------------------------------------------
 //Npc Class                                                                           
 //------------------------------------------------------------------------------------
-Npc::Npc(const std::string& nameEntity)
+Npc::Npc(const std::string& nameEntity, TileSetHandler& tileSetHandler)
 {
 
 }
@@ -521,22 +583,156 @@ Direction Route::getCurrentDirection() const
 //------------------------------------------------------------------------------------
 //Enemy Class                                                                           
 //------------------------------------------------------------------------------------
-Enemy::Enemy(const std::string& nameEntity)
+Enemy::Enemy(const std::string& nameEntity, TileSetHandler& tileSetHandler)
 {
 	std::string filePath = "data/entity/enemy/" + nameEntity;
 
 	XMLobject xmlObject = XMLobject(filePath);
 
+	idStaticImage = std::vector<uint16_t>(0);
+
+	animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
+	animations.push_back(std::vector<std::vector<DinamicAnimation>>(0));
+
+	for (int i = 0; i < animations.size(); i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			animations[i].push_back(std::vector<DinamicAnimation>(0));
+		}
+	}
+
+	tileDimension = tileSetHandler.getTileDimension();
+
+	allertingAnimation = StaticAnimation();
+
 	for (int i = 0; i < xmlObject.xmlVariabs.size(); i++)
 	{
 		XMLvariab var = xmlObject.xmlVariabs[i];
 
-		if (var.name == "nTile")
+		if (var.name == "nTileGraphics")
+		{
+			std::vector<std::string> splitter = split(var.getValue("value"), ",");
+			nTileGraphics = { std::stoi(splitter[0]), std::stoi(splitter[1]) };
+		}
+		else if (var.name == "nTile")
 		{
 			std::vector<std::string> splitter = split(var.getValue("value"), ",");
 			nTile = { std::stoi(splitter[0]), std::stoi(splitter[1]) };
 		}
+		else if (var.name == "condition")
+		{
+			std::string s = var.getValue("name");
+			if (s == "withRoute")
+			{
+				withRoute = fromStringToBool(var.getValue("value"));
+			}
+			else if (s == "stop")
+			{
+				stop = fromStringToBool(var.getValue("value"));
+			}
+			else if (s == "rotateHibtoxWithDirection")
+			{
+				rotateHitboxWithDirection = fromStringToBool(var.getValue("value"));
+			}
+		}
+		else if (var.name == "delay")
+		{
+			std::string s = var.getValue("name");
+			if (s == "delayNextStep")
+			{
+				delayNextStep = Delay(std::stof(var.getValue("value")));
+			}
+			else if (s == "delayChangingDirection")
+			{
+				delayChangeDirection = Delay(std::stof(var.getValue("value")));
+			}
+		}
+		else if (var.name == "direction")
+		{
+			std::string s = var.getValue("name");
+			if (s == "lastDirection")
+			{
+				lastDirection = (Direction)std::stoi(var.getValue("value"));
+			}
+		}
+		else if (var.name == "viewDistance")
+		{
+			viewLenght = std::stoi(var.getValue("value"));
+		}
+		else if (var.name == "route")
+		{
+			std::vector<std::string> splitter = split(var.getValue("value"), ",");
+			std::vector<Direction> steps;
+			for (auto info : splitter)
+			{
+				steps.push_back((Direction)std::stoi(info));
+			}
+			route = Route(steps);
+		}
+		else if (var.name == "z")
+		{
+			z = std::stoi(var.getValue("value"));
+		}
+		else if (var.name == "nameEntity")
+		{
+			name = var.getValue("value");
+		}
+		else if (var.name == "tileSet")
+		{
+			nameTileSet = var.getValue("value");
+		}
+		else if (var.name == "idImage")
+		{
+			std::vector<std::string> splitter = split(var.getValue("value"), ",");
+			for (auto info : splitter)
+			{
+				idStaticImage.push_back(std::stoi(info));
+			}
+		}
+		else if (var.name == "renderingAdjPos")
+		{
+			std::vector<std::string> splitter = split(var.getValue("value"), ",");
+			renderingAdjPos = { std::stoi(splitter[0]), std::stoi(splitter[1]) };
+		}
+		else if(var.name == "DinamicAnimation")
+		{
+			std::vector<uint16_t> idImages;
+			std::vector<std::string> splitter = split(var.getValue("images"), ",");
+			for (auto info : splitter)
+			{
+				idImages.push_back(std::stoi(info));
+			}
+
+			splitter = split(var.getValue("space"), ",");
+			Vector2i space = { std::stoi(splitter[0])*tileDimension.x, std::stoi(splitter[1])*tileDimension.y };
+	
+			TypeTerrain surface = (TypeTerrain)std::stoi(var.getValue("surface"));
+			Velocity velocity = (Velocity)std::stoi(var.getValue("velocity"));
+
+			animations[surface][velocity].push_back(DinamicAnimation(idImages, 
+				var.getValue("tileset"), 
+				std::stof(var.getValue("delay")), 
+				pos, 
+				std::stof(var.getValue("delayMovement")), space));
+		}
+		else if (var.name == "StaticAnimation")
+		{
+			std::vector<uint16_t> idImages;
+			std::vector<std::string> splitter = split(var.getValue("images"), ",");
+			for (auto info : splitter)
+			{
+				idImages.push_back(std::stoi(info));
+			}
+
+			if (var.getValue("name") == "allertingAnimation")
+			{
+				allertingAnimation = StaticAnimation(idImages, var.getValue("tileset"), std::stof(var.getValue("delay")), pos);
+			}
+
+		}
 	}
+
 }
 
 
@@ -798,7 +994,7 @@ void Enemy::renderEnemy(const Vector2i& posInProspective, const TileSetHandler& 
 
 	if (currentActivity == ActivityEnemy::Allerting)
 	{
-		Vector2i p = { posInProspective.x, posInProspective.y - tileDimension.y };
+		Vector2i p = { posInProspective.x + renderingAdjPos.x, posInProspective.y - tileDimension.y + renderingAdjPos.y };
 		tileSetHandler.getTileSet(nameTileSet).blitImageTile(allertingAnimation.getIdImage(), p);
 	}
 }

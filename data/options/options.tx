@@ -6,5 +6,5 @@
   <filepath name="images" value="data/images/"/>
   <filepath name="saves" value="data/saves/"/>
   <filepath name="entity" value="data/entity/"/>
-  <vsync name="vsync" value="true"/>
+  <vsync name="vsync" value="false"/>
 </options>

@@ -44,10 +44,10 @@ struct idEntity
 enum Direction
 {
 	NoneDirection = -1,
-	Up,
-	Down,
-	Right,
-	Left
+	Up, //0
+	Down, //1
+	Right, //2
+	Left //3
 };
 
 Direction reverseDirection(Direction direction);
@@ -81,6 +81,13 @@ enum Velocity
 
 
 
+
+bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities);
+int getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
+idEntity getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
+
+
+
 struct Entity
 {
 public:
@@ -94,6 +101,8 @@ public:
 	virtual void startMove(Direction direction, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void updateDirection(Direction direction);
 	virtual bool controllMove(Direction direction, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
+	virtual bool isInLimit(const Vector2i& t, const TileMap& tileMap) const;
+	virtual bool isWithouthEntity(const Vector2i& t, const std::vector<std::vector<idEntity>>& idEntities) const;
 	virtual bool controllPosition(const Vector2i& t, const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
 	virtual void update(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual uint16_t getIdImage() const;
@@ -104,9 +113,9 @@ public:
 	virtual void render(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
 
 public:
-	static bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities);
-	static int getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
-	static idEntity getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
+	//static bool isOccupied(const Vector2i& p, idEntity id, const std::vector<std::vector<idEntity>>& idEntities);
+	//static int getIndexEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
+	//static idEntity getIdEntity(const Vector2i& p, const std::vector<std::vector<idEntity>>& idEntities);
 
 public:
 	std::string name;
@@ -126,6 +135,10 @@ public:
 	Vector2i tileDimension;
 
 	Vector2i nTile;
+
+	//For rendering
+	Vector2i nTileGraphics;
+	Vector2i renderingAdjPos;
 
 	std::string nameTileSet;
 	std::vector<std::vector<std::vector<DinamicAnimation>>> animations; 
@@ -163,7 +176,7 @@ struct Npc : public Entity
 {
 public:
 	Npc() :Entity() {}
-	Npc(const std::string& nameEntity);
+	Npc(const std::string& nameEntity, TileSetHandler& tileSetHandler);
 
 	virtual void updateNpc(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);
 	virtual void renderNpc(const Vector2i& posInProspective, const TileSetHandler& tileSetHandler) const;
@@ -198,7 +211,7 @@ struct Enemy : public Entity
 {
 public:
 	Enemy() :Entity() {}
-	Enemy(const std::string& nameEntity);
+	Enemy(const std::string& nameEntity, TileSetHandler& tileSetHandler);
 
 	virtual bool detectPlayer(const TileMap& tileMap, const std::vector<std::vector<idEntity>>& idEntities) const;
 	virtual void updateEnemy(float deltaTime, TileMap& tileMap, std::vector<std::vector<idEntity>>& idEntities);

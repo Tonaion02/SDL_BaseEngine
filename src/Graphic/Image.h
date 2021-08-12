@@ -94,7 +94,7 @@ public:
 	void blit(const Vector2i& pos, const Vector2i& startRect, const Vector2i& dimRect) const;
 
 	void setBlendMode(SDL_BlendMode blendMode);
-	void setAlpha(uint32_t alpha);
+	void setAlpha(float alpha);
 
 private:
 	uint32_t m_w, m_h;

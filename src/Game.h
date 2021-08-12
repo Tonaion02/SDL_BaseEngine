@@ -5,6 +5,7 @@
 #include "Input/Input.h"
 
 #include "Graphic/Image.h"
+#include "Graphic/TextRendering.h"
 
 #include "World/World.h"
 #include "World/Level.h"
@@ -16,6 +17,8 @@
 #include "Time/Delay.h"
 
 #include "Player/Player.h"
+
+#include "Battle/BattleHandler.h"
 
 
 
@@ -94,6 +97,7 @@ protected:
 	bool m_isRunning;
 
 	bool m_isFirst;
+	bool m_isFirstBattle;
 
 	double s_deltaTime;
 	uint32_t s_ticksCount;
@@ -101,7 +105,7 @@ protected:
 	Player s_player;
 
 	Vector2i screenDimension;
-	Level currentLevel;
+	Level* currentLevel;
 
 	StatusHandler<GamePhase> statusHandler;
 
@@ -109,6 +113,11 @@ protected:
 
 	int currentEnemy = -1;
 	int zCurrentEnemy = -1;
+
+	TextRendering text;
+
+	SDL_Texture* texture;
+	SDL_Rect * rect;
 protected:
 
 	//Entity entity;

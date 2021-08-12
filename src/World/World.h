@@ -20,7 +20,7 @@ public:
 
 	bool loadLevel(const std::string& nameLevel, TileSetHandler& tileSetHandler);
 	uint16_t getIndexLevel(const std::string& nameLevel);
-	Level& getLevel(int indexLevel);
+	Level* getLevel(int indexLevel);
 
 protected:
 	World() :s_currentIndexLevels(0) {}
@@ -28,7 +28,7 @@ protected:
 
 protected:
 	std::unordered_map<std::string, uint16_t> s_indexLevels;
-	std::vector<Level> s_levels;
+	std::vector<Level*> s_levels;
 
 	uint16_t s_currentIndexLevels;
 };
